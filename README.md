@@ -7,3 +7,6 @@ TODO : Implement
 * add a function to set the score limit/boem
 * add a function to determine the order in which the game is played 
 * add a fucntion to let the user choose between teams or single player
+* visualize the dums 
+* make player hand global 
+* make modules 
