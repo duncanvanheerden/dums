@@ -16,18 +16,24 @@ def welcome_player():
 ==                                              ==
 ==================================================
 ''')
-
-
+cards_played = []
+game = []
 def get_input():
     '''
     gets input from the user
     '''
     user_input = input('Enter: ')
-    while user_input == "":
-        print('What did you say?')
-        user_input = get_input()
-    return user_input    
+    try:
+        if user_input == "":
+            print('What did you say?')
+            get_input()
+        else:
+            return user_input 
+    except ValueError:
+        print('please enter a valid answer')
+        get_input()
 
+    
 
 def generate_dominoes():
     '''
@@ -91,19 +97,54 @@ def choose_mode(dominoes):
             return divide_player_hands(dominoes,int(num_of_players))
 
 
-def bus():
+def bus(all_hands):
     '''
     TODO - decides who starts the game
     '''
-    pass
+    
+    for player,dominoes in enumerate(all_hands):
+        for dominoe in dominoes:
+             if dominoe == (6,6):
+                return player
 
-
+# def show_game_developments(game):
+#     fpri
 def play_card(player_hand,game):
     '''
     TODO - play selected card from player hand
     '''
+    if len(game)>=1:
+        leftside,rightside = game[0][0],game[-1][1]
+    if klop(game,player_hand) == False:
+        try:
+            user_card = input('Please choose a card from your list of cards:')
+            s = tuple(user_card.split(','))
+            b =tuple(map(lambda a:int(a),s))
+            if b in player_hand and is_valid_move(game,b):
+                cards_played.append(b[0])
+                cards_played.append(b[1])
+                if len(game)<1: 
+                    game.append(b)
+                elif b[0] or b[1] == rightside:
+                    game.insert(0,b)
+                elif b[0] or b[1] == leftside:
+                    game.append(b)
+                player_hand.remove(b)  
+            elif b not in player_hand:
+                print('Oops you do not have that card, But on the bright side.....you can still play this turn')
+                play_card(player_hand,game)
+            elif is_valid_move(game,b)==False:
+                print('that is not a valid move')
+                print(player_hand)
+                play_card(player_hand,game)
+
+        except ValueError:
+            print('Please enter a valid card in this format:(upper card number,lower card number)')
+            play_card(player_hand,game)
     
-    pass
+
+
+    
 
 
 def klop(game,player_hand):
@@ -113,25 +154,63 @@ def klop(game,player_hand):
     * False if player can play a card
     '''
     list_of_bools = []
-    leftside,rightside = game[0],game[-1]
-    for card in player_hand:
-        if card[0] != leftside[0] and card[0] != rightside[1] and card[1] != leftside[0] and card[1] != rightside[1]:
-            list_of_bools.append(True) 
+    if len(game)>=1:
+        leftside,rightside = game[0][0],game[-1][1]
+        for card in player_hand:
+            if card[0] != leftside and card[0] != rightside and card[1] != leftside and card[1] != rightside:
+                list_of_bools.append(True) 
+            else:
+                list_of_bools.append(False) 
+        if all(list_of_bools):  
+            print('KLOPP!')  
+            return True
         else:
-            list_of_bools.append(False) 
-    if all(list_of_bools):  
-        print('KLOPP!')  
-        return True
+            return False    
     else:
-        return False        
+        return False    
+
+
+def get_end_cards(game):
+    leftside,rightside = game[0],game[-1]
+    return(leftside,rightside)
+
+def is_valid_move(game,card):
+    if len(game)>1:
+        print(game)
+        leftside,rightside = game[0][0],game[-1][1]
+        if card[0] != leftside and card[0] != rightside and card[1] != leftside and card[1] != rightside:
+            print(card)
+            return False
+    else:
+        return True
+
+
+        
         
 
 def tell_game():
     '''
     TODO - tell game/ see who has the lowest number by counting player cards
     '''
-    print('TELL GAME!')
-    pass
+    end_cards = get_end_cards()
+
+   
+    if cards_played.count(end_cards[0]) == 7 or cards_played.count(end_cards[1])==7:
+        print('It seems we have reached a game of calculations......')
+        return True
+    return False
+
+
+def tell_game_ruling(all_hands):
+    player_counts = []
+    player_total = 0
+    if tell_game():
+        for hand in all_hands:
+            for dominoes in hand:
+                player_total+=(dominoes[0]+dominoes[1])
+            player_counts.append(player_total)
+        return player_counts.index(min(player_counts))
+
 
 
 def display_game(game):
@@ -145,18 +224,17 @@ def display_game(game):
 def run_game():
     welcome_player()
     win = False
-    game = []
     dominoes = shuffle_dominoes()    
     player_hands = choose_mode(dominoes)  
     while win != True: 
+        #start
         for player_hand in range(len(player_hands)):
             player_hand = player_hands[player_hand]
-            print(player_hand)
-            if len(game)==0:
-                play_card(player_hand,game)
+            print(f'\n{player_hand}')
+            play_card(player_hand,game)
+            print(game)
             # you need to add a function to 
-            if klop(game,player_hand) == False:
-                game = play_card(player_hand,game)
+        
             
 
 
@@ -166,3 +244,4 @@ if __name__ == '__main__':
 
 
 
+2,2
