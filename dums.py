@@ -125,9 +125,9 @@ def play_card(player_hand,game):
                 cards_played.append(b[1])
                 if len(game)<1: 
                     game.append(b)
-                elif b[0] or b[1] == rightside:
+                elif b[0]==leftside or b[1] == leftside:
                     game.insert(0,b)
-                elif b[0] or b[1] == leftside:
+                elif b[0]==rightside or b[1] == rightside:
                     game.append(b)
                 player_hand.remove(b)  
             elif b not in player_hand:
