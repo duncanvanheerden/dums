@@ -17,7 +17,7 @@ def welcome_player():
 ==================================================
 ''')
 cards_played = []
-game = []
+
 def get_input():
     '''
     gets input from the user
@@ -113,30 +113,22 @@ def play_card(player_hand,game):
     '''
     TODO - play selected card from player hand
     '''
-    if len(game)>=1:
-        leftside,rightside = game[0][0],game[-1][1]
+    
     if klop(game,player_hand) == False:
         try:
             user_card = input('Please choose a card from your list of cards:')
             s = tuple(user_card.split(','))
             b =tuple(map(lambda a:int(a),s))
-            if b in player_hand and is_valid_move(game,b):
-                cards_played.append(b[0])
-                cards_played.append(b[1])
-                if len(game)<1: 
-                    game.append(b)
-                elif b[0]==leftside or b[1] == leftside:
-                    game.insert(0,b)
-                elif b[0]==rightside or b[1] == rightside:
-                    game.append(b)
-                player_hand.remove(b)  
-            elif b not in player_hand:
-                print('Oops you do not have that card, But on the bright side.....you can still play this turn')
-                play_card(player_hand,game)
-            elif is_valid_move(game,b)==False:
-                print('that is not a valid move')
-                print(player_hand)
-                play_card(player_hand,game)
+            while  b not in player_hand and is_valid_move(game,b) == False:
+                user_card = input('Please choose a card from your list of cards:')
+                if b not in player_hand:
+                     print('Oops you do not have that card, But on the bright side.....you can still play this turn')
+                elif is_valid_move(game,b)==False:
+                    print('that is not a valid move')
+           
+            cards_played.append(b[0])
+            cards_played.append(b[1])
+            return b
 
         except ValueError:
             print('Please enter a valid card in this format:(upper card number,lower card number)')
@@ -213,26 +205,35 @@ def tell_game_ruling(all_hands):
 
 
 
-def display_game(game):
-    '''
-    TODO - show the table/game and all cards played
-    '''
-    print(game)
-    pass
 
 
 def run_game():
     welcome_player()
     win = False
     dominoes = shuffle_dominoes()    
-    player_hands = choose_mode(dominoes)  
+    player_hands = choose_mode(dominoes) 
+    game = [] 
+    changed_game = []
+    a =0
     while win != True: 
         #start
-        for player_hand in range(len(player_hands)):
-            player_hand = player_hands[player_hand]
+            if a > 3:
+                a = 0
+            player_hand = player_hands[a]
             print(f'\n{player_hand}')
-            play_card(player_hand,game)
+            if len(game)>1:
+                leftside,rightside = game[0][0],game[-1][1]
+            b = play_card(player_hand,game)
+            if len(game)<2: 
+                game.append(b)
+            elif b[0]==leftside or b[1] == leftside:
+                game.insert(0,b)
+            elif b[0]==rightside or b[1] == rightside:
+                game.append(b)
+            player_hand.remove(b) 
+            # game.pop(game[-1])
             print(game)
+            a+=1
             # you need to add a function to 
         
             
@@ -244,4 +245,4 @@ if __name__ == '__main__':
 
 
 
-2,2
+
