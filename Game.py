@@ -7,12 +7,12 @@ def selecting_game_mode():
         
         if users_input == "1":
             import dums_in_terminal.dums 
-            # break
+            break
             
 
         elif users_input == "2":
             import dums_in_pygame.dums_pygame
-            # break
+            break
         else:
             pass
             
