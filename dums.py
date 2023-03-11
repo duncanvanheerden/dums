@@ -91,11 +91,11 @@ def choose_mode(dominoes):
             return divide_player_hands(dominoes,int(num_of_players))
 
 
-def bus():
-    '''
-    TODO - decides who starts the game
-    '''
-    pass
+def bus(all_hands: list) -> list:
+    for player,dominoes in enumerate(all_hands):
+        for dominoe in dominoes:
+             if dominoe == (6,6):
+                return all_hands[player]
 
 
 def play_card(player_hand,game):
@@ -141,13 +141,14 @@ def display_game(game):
     print(game)
     pass
 
-
+import gameSetup
 def run_game():
     welcome_player()
     win = False
     game = []
-    dominoes = shuffle_dominoes()    
+    dominoes = shuffle_dominoes() 
     player_hands = choose_mode(dominoes)  
+
     while win != True: 
         for player_hand in range(len(player_hands)):
             player_hand = player_hands[player_hand]
