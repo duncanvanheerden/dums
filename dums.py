@@ -18,7 +18,7 @@ def welcome_player():
 |   #######      ######   ###    ###  #######    |
 ==                                              ==
 ==================================================
-# '''.center(150)) 
+''') 
 
 
 def generate_dominoes():
@@ -68,10 +68,8 @@ def choose_mode(dominoes):
     '''
     let user choose how many players
     '''
-
     player_input = [inquirer.List("mode",message="How many players? " ,choices=["2","3","4"],)]
     num_of_players = inquirer.prompt(player_input)['mode']
-    print(num_of_players)
     if num_of_players == "4":
         return divide_player_hands(dominoes,int(num_of_players))
     elif num_of_players == "3":
@@ -85,14 +83,13 @@ def bus(all_hands):
     '''
     TODO - decides who starts the game
     '''
-    
     for player,dominoes in enumerate(all_hands):
         for dominoe in dominoes:
              if dominoe == (6,6):
                 return all_hands[player]
 
 def get_player_card(player_hand):
-    player_input = [inquirer.List("played",choices=[str(card) for card in player_hand],)]
+    player_input = [inquirer.List("played",message="Pick a card to play.",choices=[str(card) for card in player_hand],)]
     card = inquirer.prompt(player_input)['played']
     return int(card[1]),int(card[4])
 
@@ -101,7 +98,6 @@ def play_card(player_hand,game):
     '''
     TODO - play selected card from player hand
     '''
-            
     user_card = get_player_card(player_hand)
     while  user_card not in player_hand and is_valid_move(game,user_card) == False:
         user_card = get_player_card(player_hand)
@@ -128,7 +124,7 @@ def klop(game,player_hand,player_num):
             else:
                 list_of_bools.append(False) 
         if all(list_of_bools):  
-            print(f'PLAYER {player_num} : KLOPP!')  
+            print(f'PLAYER {player_num+1} : KLOPP!')  
             return True
         else:
             return False    
@@ -137,10 +133,24 @@ def klop(game,player_hand,player_num):
 
 
 def get_end_cards(game):
+    """_summary_
+
+    Args:
+        game (list): current state of game/cards_played
+    """    
     leftside,rightside = game[0],game[-1]
     return(leftside,rightside)
 
 def is_valid_move(game,card):
+    """_summary_
+
+    Args:
+        game (_type_): _description_
+        card (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     if len(game)>1:
         print(game)
         leftside,rightside = game[0][0],game[-1][1]
@@ -156,15 +166,13 @@ def tell_game():
     TODO - tell game/ see who has the lowest number by counting player cards
     '''
     end_cards = get_end_cards()
-
-   
-    if cards_played.count(end_cards[0]) == 7 or cards_played.count(end_cards[1])==7:
+    if cards_played.count(end_cards[0]) == 7 and cards_played.count(end_cards[1])==7:
         print('It seems we have reached a game of calculations......')
         return True
     return False
 
 
-def tell_game_ruling(all_hands):
+def tell_game_rulling(all_hands):
     player_counts = []
     player_total = 0
     if tell_game():
@@ -174,19 +182,48 @@ def tell_game_ruling(all_hands):
             player_counts.append(player_total)
         return player_counts.index(min(player_counts))
 
+def update_player_scores(player_scores,player_num,points):
+    """_summary_
+
+    Args:
+        player_scores (_type_): _description_
+        player_num (_type_): _description_
+        points (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """    
+    player_scores[f'player {player_num+1}'] +=points
+    print(player_scores)
+
+
+def set_score_limit()-> int:
+    """
+    prompts the user to set the score_limit
+
+    Returns:
+        int : score limit
+    """
+    player_input = [inquirer.List("boem",message="How many points to win? " ,choices=["1","2","3","4","5"],)]
+    limit = inquirer.prompt(player_input)['boem']
+    return int(limit)
 
 def run_game():
+    """_summary_
+    """    
     welcome_player()
     win = False
     dominoes = shuffle_dominoes()    
     all_hands = choose_mode(dominoes) 
     first2play = bus(all_hands)
     player_hands = gameSetup.sort_play_order(all_hands,first2play)
-
+    player_scores = {f'player {player+1}': 0 for player in range(len(player_hands))}
+    score_limit = set_score_limit()
     game = [] 
     while win == False: 
-        for num,player_hand in enumerate(player_hands):
-            if klop(game,player_hand,num) == False:
+        for player_num,player_hand in enumerate(player_hands):
+            points = 0
+            if klop(game,player_hand,player_num) == False:
                 if len(game)>1:
                     leftside,rightside = game[0][0],game[-1][1]
                 elif len(game) == 1:
@@ -218,7 +255,19 @@ def run_game():
                         game.append(card)    
                     player_hand.remove(card) 
                 print(str(game).center(150))
+            
+            # elif gameSetup.milo(player_hand,game):
+            #     points+=2
+            #     break
+            # elif tell_game_rulling(player_hands):
+            #     points+=2
+            #     break
+            if len(player_hand)==0:
+                points+=1
+                break
+        
+    update_player_scores(player_scores,player_num,points)
+    print(f'Player {player_num+1} wins!')        
 
-
-if __name__ == '__main__':
+if __name__ == '__main__':  
     run_game()    
