@@ -1,5 +1,8 @@
+import inquirer
 import random
+import gameSetup
 
+cards_played = []
 def welcome_player():
     '''
     prints the welcome message
@@ -15,18 +18,7 @@ def welcome_player():
 |   #######      ######   ###    ###  #######    |
 ==                                              ==
 ==================================================
-''')
-
-
-def get_input():
-    '''
-    gets input from the user
-    '''
-    user_input = input('Enter: ')
-    while user_input == "":
-        print('What did you say?')
-        user_input = get_input()
-    return user_input    
+# '''.center(150)) 
 
 
 def generate_dominoes():
@@ -76,94 +68,157 @@ def choose_mode(dominoes):
     '''
     let user choose how many players
     '''
-    print("How many players? (2/3/4)")
-    num_of_players = get_input()
-    while num_of_players.isalpha() or int(num_of_players) not in range(2,5):
-        print("That's not a valid number! choose a different one.")
-        num_of_players = get_input()  
-    else:
-        if num_of_players == "4":
-            return divide_player_hands(dominoes,int(num_of_players))
-        elif num_of_players == "3":
-            dominoes.remove((0,0))
-            return divide_player_hands(dominoes,int(num_of_players))
-        elif num_of_players == "2":
-            return divide_player_hands(dominoes,int(num_of_players))
+
+    player_input = [inquirer.List("mode",message="How many players? " ,choices=["2","3","4"],)]
+    num_of_players = inquirer.prompt(player_input)['mode']
+    print(num_of_players)
+    if num_of_players == "4":
+        return divide_player_hands(dominoes,int(num_of_players))
+    elif num_of_players == "3":
+        dominoes.remove((0,0))
+        return divide_player_hands(dominoes,int(num_of_players))
+    elif num_of_players == "2":
+        return divide_player_hands(dominoes,int(num_of_players))
 
 
-def bus(all_hands: list) -> list:
+def bus(all_hands):
+    '''
+    TODO - decides who starts the game
+    '''
+    
     for player,dominoes in enumerate(all_hands):
         for dominoe in dominoes:
              if dominoe == (6,6):
                 return all_hands[player]
+
+def get_player_card(player_hand):
+    player_input = [inquirer.List("played",choices=[str(card) for card in player_hand],)]
+    card = inquirer.prompt(player_input)['played']
+    return int(card[1]),int(card[4])
 
 
 def play_card(player_hand,game):
     '''
     TODO - play selected card from player hand
     '''
+            
+    user_card = get_player_card(player_hand)
+    while  user_card not in player_hand and is_valid_move(game,user_card) == False:
+        user_card = get_player_card(player_hand)
+        if is_valid_move(game,user_card)==False:
+            print('that is not a valid move')
     
-    pass
+    cards_played.append(user_card[0])
+    cards_played.append(user_card[1])
+    return user_card
 
 
-def klop(game,player_hand):
+def klop(game,player_hand,player_num):
     '''
     TODO - returns a boolean:
     * True if player cannot play a card 
     * False if player can play a card
     '''
     list_of_bools = []
-    leftside,rightside = game[0],game[-1]
-    for card in player_hand:
-        if card[0] != leftside[0] and card[0] != rightside[1] and card[1] != leftside[0] and card[1] != rightside[1]:
-            list_of_bools.append(True) 
+    if len(game)>=1:
+        leftside,rightside = game[0][0],game[-1][1]
+        for card in player_hand:
+            if card[0] != leftside and card[0] != rightside and card[1] != leftside and card[1] != rightside:
+                list_of_bools.append(True) 
+            else:
+                list_of_bools.append(False) 
+        if all(list_of_bools):  
+            print(f'PLAYER {player_num} : KLOPP!')  
+            return True
         else:
-            list_of_bools.append(False) 
-    if all(list_of_bools):  
-        print('KLOPP!')  
-        return True
+            return False    
     else:
-        return False        
-        
+        return False    
+
+
+def get_end_cards(game):
+    leftside,rightside = game[0],game[-1]
+    return(leftside,rightside)
+
+def is_valid_move(game,card):
+    if len(game)>1:
+        print(game)
+        leftside,rightside = game[0][0],game[-1][1]
+        if card[0] != leftside and card[0] != rightside and card[1] != leftside and card[1] != rightside:
+            print(card)
+            return False
+    else:
+        return True
+    
 
 def tell_game():
     '''
     TODO - tell game/ see who has the lowest number by counting player cards
     '''
-    print('TELL GAME!')
-    pass
+    end_cards = get_end_cards()
+
+   
+    if cards_played.count(end_cards[0]) == 7 or cards_played.count(end_cards[1])==7:
+        print('It seems we have reached a game of calculations......')
+        return True
+    return False
 
 
-def display_game(game):
-    '''
-    TODO - show the table/game and all cards played
-    '''
-    print(game)
-    pass
+def tell_game_ruling(all_hands):
+    player_counts = []
+    player_total = 0
+    if tell_game():
+        for hand in all_hands:
+            for dominoes in hand:
+                player_total+=(dominoes[0]+dominoes[1])
+            player_counts.append(player_total)
+        return player_counts.index(min(player_counts))
 
-import gameSetup
+
 def run_game():
     welcome_player()
     win = False
-    game = []
-    dominoes = shuffle_dominoes() 
-    player_hands = choose_mode(dominoes)  
+    dominoes = shuffle_dominoes()    
+    all_hands = choose_mode(dominoes) 
+    first2play = bus(all_hands)
+    player_hands = gameSetup.sort_play_order(all_hands,first2play)
 
-    while win != True: 
-        for player_hand in range(len(player_hands)):
-            player_hand = player_hands[player_hand]
-            print(player_hand)
-            if len(game)==0:
-                play_card(player_hand,game)
-            # you need to add a function to 
-            if klop(game,player_hand) == False:
-                game = play_card(player_hand,game)
-            
+    game = [] 
+    while win == False: 
+        for num,player_hand in enumerate(player_hands):
+            if klop(game,player_hand,num) == False:
+                if len(game)>1:
+                    leftside,rightside = game[0][0],game[-1][1]
+                elif len(game) == 1:
+                    leftside,rightside = game[0][0],game[0][1]  
 
+                card = play_card(player_hand,game)
+                if len(game)==0:
+                    game.append(card)
+                    player_hand.remove(card)
+                elif len(game)<2:
+                    if card[1]==rightside:
+                        flipcard = card[1],card[0]
+                        game.append(flipcard)
+                    else:
+                        game.append(card) 
+                    player_hand.remove(card) 
+                elif card[0]==leftside or card[1] == leftside:
+                    if card[0]==leftside:
+                        flipcard = card[1],card[0]
+                        game.insert(0,flipcard)
+                    else:
+                        game.insert(0,card)    
+                    player_hand.remove(card) 
+                elif card[0]==rightside or card[1] == rightside:
+                    if card[1]==rightside:
+                        flipcard = card[1],card[0]
+                        game.append(flipcard)
+                    else:
+                        game.append(card)    
+                    player_hand.remove(card) 
+                print(str(game).center(150))
 
 
 if __name__ == '__main__':
-    run_game()
-
-
-
+    run_game()    
