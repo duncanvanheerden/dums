@@ -204,7 +204,27 @@ def tell_game_ruling(all_hands):
         return player_counts.index(min(player_counts))
 
 
-
+def flip_dominoes(leftside,rightside,dominoe,player_hand,game):
+    '''
+    This function flips the dominoes so it adds the dominoe onto the game with the side that equals left/right
+    Param leftside: number that can be played on the left side
+    Param rightside: number that can be played on the right side
+    Param dominoe: dominoe that was played
+    '''
+    
+    fliped_dum = ()
+    dominoe = play_card(player_hand,game)
+    if klop(game,player_hand) == False and dominoe in player_hand:
+        player_hand.remove(dominoe)    
+    if dominoe[0]==leftside:
+        fliped_dum = (dominoe[1],dominoe[0])
+    elif dominoe[1] == leftside:
+        fliped_dum = (dominoe[0],dominoe[1])
+    elif dominoe[0]== rightside:
+        fliped_dum = (dominoe[0],dominoe[1])   
+    elif dominoe[1] == rightside:
+        fliped_dum = (dominoe[1],dominoe[0])
+    return fliped_dum
 
 
 def run_game():
@@ -212,8 +232,7 @@ def run_game():
     win = False
     dominoes = shuffle_dominoes()    
     player_hands = choose_mode(dominoes) 
-    game = [] 
-    changed_game = []
+    game = []
     a =0
     while win != True: 
         #start
@@ -221,17 +240,17 @@ def run_game():
                 a = 0
             player_hand = player_hands[a]
             print(f'\n{player_hand}')
-            if len(game)>1:
+            if len(game)<1:
+                b = play_card(player_hand,game)
+            elif len(game)>1:
                 leftside,rightside = game[0][0],game[-1][1]
-            b = play_card(player_hand,game)
+                b = flip_dominoes(leftside,rightside,b,player_hand,game)          
             if len(game)<2: 
                 game.append(b)
             elif b[0]==leftside or b[1] == leftside:
                 game.insert(0,b)
             elif b[0]==rightside or b[1] == rightside:
                 game.append(b)
-            player_hand.remove(b) 
-            # game.pop(game[-1])
             print(game)
             a+=1
             # you need to add a function to 
