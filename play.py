@@ -1,4 +1,4 @@
-from interface.Interface import Interface
+from main.interface.Interface import Interface
 
 """
 
