@@ -1,3 +1,5 @@
+from interface.Interface import Interface
+
 """
 
 This module will run the dums game
@@ -7,8 +9,7 @@ This module will run the dums game
 class RunGame():
 
     def __init__(self):
-        pass
-
+        self.interface = Interface()
 
 
 if __name__ == '__main__':

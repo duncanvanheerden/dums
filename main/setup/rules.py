@@ -1,10 +1,10 @@
- 
+
 
 class Rules():
 
     def __init__(self):
         pass
- 
+
     def klop(game,player_hand):
         '''
         TODO - returns a boolean:
