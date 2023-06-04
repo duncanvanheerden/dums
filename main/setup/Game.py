@@ -1,4 +1,5 @@
 import random
+import pprint as pp
 
 class Game:
 
@@ -9,14 +10,16 @@ class Game:
 
         * Initializes the variables:
         * cards: list of shuffled cards.
-        * board: list of cards played.
+        * player_decks: list of player decks that consist of dominoe cards.
+        * game_board: list of cards played.
         * players_and_cards: dictionary of Key = players and Value = cards.
         * score_limit: maximum score.
         * round: number of rounds.
         """        
         self.cards = self.shuffle_cards()
-        self.board = []
-        self.players_and_cards = {}
+        self.player_decks = []
+        self.game_board = []
+        self.players = {}
         self.score_limit = 1
         self.round = 1
 
@@ -24,10 +27,10 @@ class Game:
     @staticmethod
     def generate_cards():
         """
-        * Generate the domino cards as a list of tuples.
+        * Generate the dominoe cards as a list of tuples.
 
         Returns:
-            list: domino cards
+            list: dominoe cards
         """       
         cards = []
         for i in range(7):
@@ -63,18 +66,17 @@ class Game:
         Returns:
             list: all_player_decks
         """   
-        cards = self.cards
-
-        all_hands = []
-        while len(cards)>0:
-            hand = []
-            while len(hand)!=(len(cards)//num_players):
-                card = cards[0]
-                hand.append(card)
-                cards.pop(0)
+        copied_cards = [card for card in self.cards]
+        all_player_decks = []
+        while len(copied_cards)>0:
+            deck = []
+            while len(deck)!=(len(self.cards)//num_players):
+                card = copied_cards[0]
+                deck.append(card)
+                copied_cards.pop(0)
             else:
-                all_hands.append(hand)  
-        return all_hands  
+                all_player_decks.append(deck)  
+        return all_player_decks 
 
 
     def choose_mode(self, num_of_players):
@@ -84,15 +86,14 @@ class Game:
         Returns:
             list: divided cards for each player
         """        
-        # this method should be updated and used in gui
         if num_of_players == 2:
-            return self.divide_cards(2)
+            self.player_decks = self.divide_cards(2)
         elif num_of_players == 3:
             self.cards.remove((0, 0))
-            return self.divide_cards(3)
+            self.player_decks = self.divide_cards(3)
         elif num_of_players == 4:
-            return self.divide_cards(4)
-
+            self.player_decks = self.divide_cards(4)
+ 
 
     def get_first_to_play(self):
         """
@@ -101,21 +102,21 @@ class Game:
         Returns:
             list: player with the (6,6) card.
         """ 
-        for deck in self.cards:
-            if deck.count((6.6))>0:
+        for deck in self.player_decks:
+            if deck.count((6,6))>0:
                 return deck
 
-
-    def set_play_order(self):
+    
+    def set_player_dict(self):
         """
         * Sets the play order as a dictionary.
-        * Key: player (e.g., "Player 1")
-        * Value: player cards
+        * Key: player (e.g., "Player 1").
+        * Value: player deck.
         """
         arranged_cards = self.arrange_player_order()
         for num, deck in enumerate(arranged_cards):
             player_key = "Player " + str(num + 1)
-            self.players_and_cards[player_key] = deck
+            self.players[player_key] = deck
 
             
     def arrange_player_order(self):
@@ -129,7 +130,7 @@ class Game:
         player_1 = self.get_first_to_play()
         new_card_order = []
         new_card_order.append(player_1)
-        for player_deck in self.cards:
+        for player_deck in self.player_decks:
             if player_deck != player_1:
                 new_card_order.append(player_deck)
         return new_card_order
@@ -140,3 +141,5 @@ class Game:
         * The score limit is set by the host of the game.
         """        
         self.score_limit = num_of_rounds 
+
+
