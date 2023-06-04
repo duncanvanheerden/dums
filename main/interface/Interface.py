@@ -8,7 +8,7 @@ class Interface():
 
     def window(self):
         # Set the dimensions of the window
-        width = 800
+        width = 1300
         height = 600
 
         # Create the window display
