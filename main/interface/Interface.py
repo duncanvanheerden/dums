@@ -1,6 +1,7 @@
 import pygame as pg
-import Button.Button as button
 import sys
+import os
+from main.interface.Button import Button as button
 
 fps = 60
 
@@ -13,6 +14,9 @@ class Interface():
         # Set the dimensions of the window
         width = 1300
         height = 600
+        
+        # Get current working directory
+        cwd = os.getcwd()
 
         # Create the window display
         screen = pg.display.set_mode((width, height))
@@ -21,12 +25,12 @@ class Interface():
         pg.display.set_caption("My Pygame Window")
         
         #load button images
-        start_img = pg.image.load('./Button/img/start_button.png').convert_alpha()
-        rules_img = pg.image.load('./Button/img/rules.png').convert_alpha()
-        singlePlay_img = pg.image.load('./Button/img/Single_player.png').convert_alpha()
-        multiplay_img = pg.image.load('./Button/img/Multiplayer.png').convert_alpha()
-        homescreen_img = pg.image.load('./Button/img/home_screen.png').convert_alpha()
-        exit_img = pg.image.load('./Button/img/exit_button.png').convert_alpha()
+        start_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/start_btn.png'))
+        rules_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/rules.png'))
+        singlePlay_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/Single_player.png'))
+        multiplay_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/Multiplayer.png'))
+        homescreen_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/home_screen.png'))
+        exit_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/exit_button.png'))
 
         #create button instances
         start_button = button.Button(200, 0, start_img, 0.5)

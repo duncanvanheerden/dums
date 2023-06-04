@@ -348,3 +348,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Visual Studio Code settings
+.vscode/settings.json
+
+# Ignore your .vscode workspace settings file
+.vscode/*.code-workspace
