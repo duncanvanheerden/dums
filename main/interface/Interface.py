@@ -22,11 +22,19 @@ class Interface():
         
         #load button images
         start_img = pg.image.load('./Button/img/start_button.png').convert_alpha()
+        rules_img = pg.image.load('./Button/img/rules.png').convert_alpha()
+        singlePlay_img = pg.image.load('./Button/img/Single_player.png').convert_alpha()
+        multiplay_img = pg.image.load('./Button/img/Multiplayer.png').convert_alpha()
+        homescreen_img = pg.image.load('./Button/img/home_screen.png').convert_alpha()
         exit_img = pg.image.load('./Button/img/exit_button.png').convert_alpha()
 
         #create button instances
-        start_button = button.Button(200, 100, start_img, 0.5)
-        exit_button = button.Button(200, 300, exit_img, 0.5)
+        start_button = button.Button(200, 0, start_img, 0.5)
+        rules_button = button.Button(200, 200, rules_img, 1.2)
+        singlePlay_button = button.Button(200, 200, singlePlay_img, 1.2)
+        multiplay_button = button.Button(200, 400, multiplay_img, 1.2)
+        homescreen = button.Button(200, 600, homescreen_img, 2)
+        exit_button = button.Button(200, 400, exit_img, 0.5)
         
         start_menu = "main"
         
@@ -45,11 +53,23 @@ class Interface():
                 
                 if exit_button.draw(screen):
                     running = False
+                    
+                if rules_button.draw(screen):
+                    start_menu = "rules"
             
             if start_menu == "play":
-                # Draw the button
-                    print("play")
-                    # start_menu = "play"
+                
+                if singlePlay_button.draw(screen):
+                    print("singleplay")
+                 
+                if multiplay_button.draw(screen):
+                    print("multiplay")
+                    
+                if homescreen.draw(screen):
+                    start_menu = "main"
+                    
+            if start_menu == "rules":
+                print("rules")
             
             for event in pg.event.get():
                 if event.type == pg.QUIT:
