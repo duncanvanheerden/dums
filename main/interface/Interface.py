@@ -88,8 +88,3 @@ class Interface():
         pg.quit()
 
 
-# Create an instance of the Interface class
-my_interface = Interface()
-
-# Call the window method to create the Pygame window
-my_interface.window()

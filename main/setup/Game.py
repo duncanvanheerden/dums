@@ -1,5 +1,7 @@
 import random
-import pprint as pp
+
+from main.client.player.player import Player
+
 
 class Game:
 
@@ -20,7 +22,7 @@ class Game:
         self.player_decks = []
         self.game_board = []
         self.players = {}
-        self.score_limit = 1
+        self.score_limit = 0
         self.round = 1
 
 
@@ -113,11 +115,20 @@ class Game:
         * Key: player (e.g., "Player 1").
         * Value: player deck.
         """
-        arranged_cards = self.arrange_player_order()
-        for num, deck in enumerate(arranged_cards):
-            player_key = "Player " + str(num + 1)
-            self.players[player_key] = deck
-
+        if self.round == 1:
+            arranged_cards = self.arrange_player_order()
+            for num, deck in enumerate(arranged_cards):
+                player_key = "Player " + str(num + 1)
+                player = Player()
+                player.set_player_deck(deck)
+                self.players[player_key] = player
+        else:
+            arranged_cards = self.player_decks 
+            for num, deck in enumerate(arranged_cards):
+                player_key = "Player " + str(num + 1)
+                player = self.players[player_key]
+                player.set_player_deck(deck)
+        
             
     def arrange_player_order(self):
         """
@@ -128,12 +139,12 @@ class Game:
             list: re-arranged list of player decks.
         """        
         player_1 = self.get_first_to_play()
-        new_card_order = []
-        new_card_order.append(player_1)
+        new_deck_order = []
+        new_deck_order.append(player_1)
         for player_deck in self.player_decks:
             if player_deck != player_1:
-                new_card_order.append(player_deck)
-        return new_card_order
+                new_deck_order.append(player_deck)
+        return new_deck_order
 
 
     def set_score_limit(self, num_of_rounds):
@@ -141,5 +152,28 @@ class Game:
         * The score limit is set by the host of the game.
         """        
         self.score_limit = num_of_rounds 
+
+
+    def setup_game(self):
+        """
+        * Prompt the host to setup the game.
+        """    
+        if self.round == 1:
+            num_of_players = int(input(("how many players: ")))
+            score_limit = int(input(("set the score limit: ")))
+            self.choose_mode(num_of_players)
+            self.set_score_limit(score_limit)
+            self.set_player_dict()
+        else:
+            self.setup_new_round()    
+
+
+    def setup_new_round(self):
+        """
+        * sets up a new round of the game.
+        """    
+        self.player_decks = self.divide_cards(len(self.players))
+        self.set_player_dict()
+        self.game_board = []
 
 
