@@ -7,6 +7,7 @@ sys.path.append(root_directory)
 
 import unittest
 from main.setup.Game import Game
+from main.client.player.player import Player
 
 
 class MyTestCase(unittest.TestCase):
@@ -41,19 +42,101 @@ class MyTestCase(unittest.TestCase):
         self.assertTrue(first_player.count((6,6))>0)  # Check if the correct player deck is returned
 
 
-    def test_set_player_dict(self):
+    def test_set_player_dict_round1(self):
         game = Game()
-        game.cards = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (2, 3), (2, 4), (2, 5), (2, 6), (3, 4), (3, 5), (3, 6), (4, 5), (4, 6), (5, 6)]
-        game.player_decks = [[(0, 0), (1, 1), (2, 2)], [(3, 3), (4, 4), (5, 5)], [(6, 6), (0, 1), (0, 2)], [(0, 3), (0, 4), (0, 5)]]
+        game.cards = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6),
+                    (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6),(1, 2),
+                    (1, 3), (1, 4), (1, 5), (1, 6), (2, 3),(2, 4),(2, 5), 
+                    (2, 6), (3, 4), (3, 5), (3, 6),(4, 5), (4, 6), (5, 6)]
+        
+        game.player_decks = [[(0, 0), (1, 1), (2, 2)],
+                            [(3, 3), (4, 4), (5, 5)],
+                            [(6, 6), (0, 1), (0, 2)],
+                            [(0, 3), (0, 4), (0, 5)]]
+        
         game.set_player_dict()
 
         expected_players = {
-            "Player 1": [(6, 6), (0, 1), (0, 2)],
-            "Player 2": [(0, 0), (1, 1), (2, 2)],
-            "Player 3": [(3, 3), (4, 4), (5, 5)],
-            "Player 4": [(0, 3), (0, 4), (0, 5)]}
+            "Player 1": Player(),
+            "Player 2": Player(),
+            "Player 3": Player(),
+            "Player 4": Player()
+        }
 
-        self.assertEqual(game.players, expected_players)
+        expected_players["Player 1"].set_player_deck([(6, 6), (0, 1), (0, 2)])
+        expected_players["Player 2"].set_player_deck([(0, 0), (1, 1), (2, 2)])
+        expected_players["Player 3"].set_player_deck([(3, 3), (4, 4), (5, 5)])
+        expected_players["Player 4"].set_player_deck([(0, 3), (0, 4), (0, 5)])
+
+        self.assertEqual(game.players["Player 1"].deck,
+                        expected_players["Player 1"].deck)
+        self.assertEqual(game.players["Player 2"].deck,
+                        expected_players["Player 2"].deck)
+        self.assertEqual(game.players["Player 3"].deck,
+                        expected_players["Player 3"].deck)
+        self.assertEqual(game.players["Player 4"].deck,
+                        expected_players["Player 4"].deck)
+
+
+    def test_set_player_dict_round2(self):
+        game = Game()
+        game.cards = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6),
+                    (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (1, 2),
+                    (1, 3), (1, 4), (1, 5), (1, 6), (2, 3), (2, 4), (2, 5),
+                    (2, 6), (3, 4), (3, 5), (3, 6), (4, 5), (4, 6), (5, 6)]
+
+        # Round 1 player decks
+        game.player_decks = [[(0, 0), (1, 1), (2, 2)],
+                            [(3, 3), (4, 4), (5, 5)],
+                            [(6, 6), (0, 1), (0, 2)],
+                            [(0, 3), (0, 4), (0, 5)]]
+
+        game.set_player_dict()
+
+        # Expected player decks for round 1
+        expected_players_round1 = {
+            "Player 1": Player(),
+            "Player 2": Player(),
+            "Player 3": Player(),
+            "Player 4": Player()
+        }
+
+        expected_players_round1["Player 1"].set_player_deck([(6, 6), (0, 1), (0, 2)])
+        expected_players_round1["Player 2"].set_player_deck([(0, 0), (1, 1), (2, 2)])
+        expected_players_round1["Player 3"].set_player_deck([(3, 3), (4, 4), (5, 5)])
+        expected_players_round1["Player 4"].set_player_deck([(0, 3), (0, 4), (0, 5)])
+
+        self.assertEqual(game.players["Player 1"].deck, expected_players_round1["Player 1"].deck)
+        self.assertEqual(game.players["Player 2"].deck, expected_players_round1["Player 2"].deck)
+        self.assertEqual(game.players["Player 3"].deck, expected_players_round1["Player 3"].deck)
+        self.assertEqual(game.players["Player 4"].deck, expected_players_round1["Player 4"].deck)
+
+        # Round 2 player decks
+        game.player_decks = [[(1, 2), (2, 3), (2, 4)],
+                            [(3, 3), (4, 4), (5, 5)],
+                            [(6, 6), (0, 1), (0, 2)],
+                            [(0, 3), (0, 4), (0, 5)]]
+
+        game.round = 2
+        game.set_player_dict()
+
+        # Expected player decks for round 2
+        expected_players_round2 = {
+            "Player 1": Player(),
+            "Player 2": Player(),
+            "Player 3": Player(),
+            "Player 4": Player()
+        }
+
+        expected_players_round2["Player 1"].set_player_deck([(1, 2), (2, 3), (2, 4)])
+        expected_players_round2["Player 2"].set_player_deck([(3, 3), (4, 4), (5, 5)])
+        expected_players_round2["Player 3"].set_player_deck([(6, 6), (0, 1), (0, 2)])
+        expected_players_round2["Player 4"].set_player_deck([(0, 3), (0, 4), (0, 5)])
+
+        self.assertEqual(game.players["Player 1"].deck, expected_players_round2["Player 1"].deck)
+        self.assertEqual(game.players["Player 2"].deck, expected_players_round2["Player 2"].deck)
+        self.assertEqual(game.players["Player 3"].deck, expected_players_round2["Player 3"].deck)
+        self.assertEqual(game.players["Player 4"].deck, expected_players_round2["Player 4"].deck)
 
 
     def test_arrange_player_order(self):
