@@ -65,7 +65,7 @@ class Play():
         centered_text = " " * left_padding + text
 
         output = '\n' + centered_text + '\n'
-        print(CLEAR)
+        print(CLEAR,CLEAR_AND_RETURN)
         print(output)
 
 
@@ -76,10 +76,10 @@ class Play():
         round_won = False
 
         while(round_won == False):  # the round is not won, keep playing
-            for num in range(1, len(self.game.players) + 1):
+            for value in self.game.players:
+                player = self.game.players[value]
                 self.center_text(str(self.game.game_board)) 
-                player = self.game.players[f"Player {num}"]
-                print("wins", player.wins)
+                print("Player wins: ", player.wins)
                 choices = [f"{card[0]}-{card[1]}" for card in player.deck]  # Convert tuples to strings
                 card_to_play = questionary.select("Choose a card:", choices=choices).ask()
                 card_to_play = tuple(map(int, card_to_play.split("-")))  # Convert selected string back to a tuple
@@ -91,10 +91,6 @@ class Play():
                     print("wins", player.wins)
                     round_won = True
                     break
-                print(CLEAR_AND_RETURN)       
-
-
- 
 
 
 if __name__ == '__main__':
