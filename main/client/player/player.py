@@ -25,6 +25,8 @@ class Player:
         pass
 
     
+
+    
     def set_valid_card(self, able_to_play):
         """
         * setter method.

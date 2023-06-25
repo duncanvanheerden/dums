@@ -10,6 +10,9 @@ This module will run the dums game
 
 """
 
+CLEAR = "\033[2J"
+CLEAR_AND_RETURN = "\033[H"
+
 class Play():
 
     def __init__(self):
@@ -24,7 +27,7 @@ class Play():
         * Run the dums game.
         """   
         
-        while(True): # boem is not won play round
+        while(self.check_win()==False): # boem is not won play round
             self.game.setup_game()
             print("score limit: ", self.game.score_limit)
             print("round: ", self.game.round)
@@ -32,6 +35,23 @@ class Play():
             # stuff = input("say something: ")
             # if stuff.lower() == "quit": break
         # print("\n" + "Bye")
+
+    
+    def check_win(self):
+        """
+        * Checks if a player has won enough rounds to win the game.
+
+        Returns:
+            boolean: True if any player has won enough rounds to win the game, False otherwise.
+        """
+        for num in range(1, len(self.game.players) + 1):
+            player = self.game.players[f"Player {num}"]
+            if player.wins == self.game.score_limit:
+                print(CLEAR,CLEAR_AND_RETURN)
+                print(f"Player {num} has won the game")
+                return True
+        return False
+
 
     @staticmethod
     def center_text(text):
@@ -45,6 +65,7 @@ class Play():
         centered_text = " " * left_padding + text
 
         output = '\n' + centered_text + '\n'
+        print(CLEAR)
         print(output)
 
 
@@ -70,7 +91,7 @@ class Play():
                     print("wins", player.wins)
                     round_won = True
                     break
-
+                print(CLEAR_AND_RETURN)       
 
 
  
