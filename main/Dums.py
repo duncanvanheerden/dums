@@ -1,9 +1,10 @@
 # from main.interface.Interface import Interface
-from main.setup.Game import Game
-from main.setup.rules import Rules
+from setup.Game import Game
+from setup.rules import Rules
 from pprint import pprint
 import shutil
 import questionary
+
 """
 
 This module will run the dums game
@@ -50,11 +51,11 @@ class Play():
         Returns:
             bool: True if the player has a valid card, False otherwise.
         """
-        for card in player.deck:
-            if card[0] == left_side or card[0] == right_side or card[1] == left_side or card[1] == right_side:
-                return True
+        return any(
+            card[0] in (left_side, right_side) or card[1] in (left_side, right_side)
+            for card in player.deck
+        )
 
-        return False  
     
 
     def check_win(self):

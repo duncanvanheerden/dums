@@ -1,7 +1,7 @@
 import random
 import questionary
 
-from main.client.player.player import Player
+from client.player.player import Player
 
 
 class Game:
