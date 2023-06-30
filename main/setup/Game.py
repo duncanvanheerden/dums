@@ -1,7 +1,7 @@
 import random
 import questionary
 
-from client.player.player import Player
+from main.client.player.player import Player
 
 
 class Game:
@@ -171,7 +171,7 @@ class Game:
 
     def setup_new_round(self):
         """
-        * sets up a new round of the game.
+        * Sets up a new round of the game.
         """    
         self.player_decks = self.divide_cards(len(self.players))
         self.set_player_dict()
