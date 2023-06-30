@@ -1,4 +1,5 @@
-
+CLEAR = "\033[2J"
+CLEAR_AND_RETURN = "\033[H"
 
 class Rules():
 

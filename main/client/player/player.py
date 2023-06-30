@@ -1,4 +1,4 @@
-from main.setup.rules import Rules
+from setup.rules import Rules
 
 class Player:
 
@@ -23,6 +23,8 @@ class Player:
         * method to play card from deck.
         """ 
         pass
+
+    
 
     
     def set_valid_card(self, able_to_play):
