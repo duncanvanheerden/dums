@@ -1,4 +1,4 @@
-### Running Unit Tests
+Running Unit Tests
 
 To run the unit tests in this project, make sure you have the following configurations set up:
 Visual Studio Code Settings
@@ -8,7 +8,7 @@ Visual Studio Code Settings
     Type "Preferences: Open Workspace Settings" and press Enter.
     In the workspace settings, ensure that the following settings are configured:
 
-### json
+json
 
 {
     "python.testing.unittestEnabled": true,
