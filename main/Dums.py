@@ -24,18 +24,22 @@ class Play():
         self.game = Game()
         self.left_end = None
         self.right_end = None
+        self.last_card_played = ()
             
 
     def rungame(self):
         """
         * Run the dums game.
         """   
+
+        win = self.check_win()
         
-        while(self.check_win()==False): # boem is not won play round
+        while(win==False): # boem is not won play round
             self.game.setup_game()
             print("score limit: ", self.game.score_limit)
             print("round: ", self.game.round)
             self.play_round()
+            win = self.check_win()
 
 
     @staticmethod
@@ -56,7 +60,6 @@ class Play():
             for card in player.deck
         )
 
-    
 
     def check_win(self):
         """
@@ -68,7 +71,7 @@ class Play():
         for value in self.game.players:
             player = self.game.players[value]
             if player.wins == self.game.score_limit:
-                print(CLEAR,CLEAR_AND_RETURN)
+                # print(CLEAR,CLEAR_AND_RETURN)
                 print(f"{value} has won the game")
                 return True
         return False
@@ -98,7 +101,7 @@ class Play():
         centered_text = " " * left_padding + text
 
         output = '\n' + centered_text + '\n'
-        print(CLEAR,CLEAR_AND_RETURN)
+        # print(CLEAR,CLEAR_AND_RETURN)
         print(output)
 
 
@@ -114,38 +117,59 @@ class Play():
             self.game.game_board.append(card)    
 
 
+    def play_card(self,player):
+        choices = [f"{card[0]}-{card[1]}" for card in player.deck]  # Convert tuples to strings
+        card_to_play = questionary.select("Choose a card:", choices=choices).ask()
+        card_to_play = tuple(map(int, card_to_play.split("-")))  # Convert selected string back to a tuple
+        if not self.game.game_board:
+            self.game.game_board.append(card_to_play)
+        else:   
+            self.choose_side_to_play(card_to_play)
+        player.deck.remove(card_to_play)
+
+
+    def handle_play(self,player):
+        if self.able_to_play(player) == True:
+            self.play_card(player)
+            self.left_end = self.game.game_board[0][0]
+            self.right_end = self.game.game_board[-1][1]
+            return True
+        else:
+            print(f"{player} has klopped!!!")
+            self.left_end = self.game.game_board[0][0]
+            self.right_end = self.game.game_board[-1][1]
+            return False
+        
+
+    def check_round_win(self,player):
+        if len(player.deck) == 0:
+            player.wins += 1
+            self.game.round += 1
+            return True
+        else: return False
+            
+
+    def display_gameboard(self):
+        self.center_text(str(self.game.game_board))    
+
+
     def play_round(self):
         """
         * handles each round of the game until the score limit is reached.
         """ 
-        round_won = False
+        round_win = False
 
-        while(round_won == False):  # the round is not won, keep playing
+        while(round_win == False):  # the round is not won, keep playing
             for value in self.game.players:
                 player = self.game.players[value]   
-                self.center_text(str(self.game.game_board)) 
+                self.display_gameboard()
                 print("Player wins: ", player.wins)
-                if self.able_to_play(player) == True:
-                    choices = [f"{card[0]}-{card[1]}" for card in player.deck]  # Convert tuples to strings
-                    card_to_play = questionary.select("Choose a card:", choices=choices).ask()
-                    card_to_play = tuple(map(int, card_to_play.split("-")))  # Convert selected string back to a tuple
-                    if not self.game.game_board:
-                        self.game.game_board.append(card_to_play)
-                    else:   
-                        self.choose_side_to_play(card_to_play)
-                    player.deck.remove(card_to_play)
-                else:
-                    print(f"{value} has klopped!!!")
-                    continue    
-                if len(player.deck) == 0:
-                    player.wins += 1
-                    self.game.round += 1
+                self.handle_play(player)
+                round_win = self.check_round_win(player)   
+                if (round_win == True):
                     print("wins", player.wins)
-                    round_won = True
                     break
-                self.left_end = self.game.game_board[0][0]
-                self.right_end = self.game.game_board[-1][1]
-
+                
 
 if __name__ == '__main__':
     Play().rungame()
