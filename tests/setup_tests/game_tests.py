@@ -5,6 +5,7 @@ import os
 root_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",".."))
 sys.path.append(root_directory)
 
+
 import unittest
 from main.setup.Game import Game
 from main.client.player.player import Player

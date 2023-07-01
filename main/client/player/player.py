@@ -1,4 +1,4 @@
-from setup.rules import Rules
+from main.setup.rules import Rules
 
 class Player:
 
