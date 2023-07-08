@@ -16,6 +16,8 @@ class Player:
         self.deck = []
         self.name = ""
         self.has_valid_card = True
+        self.total_count = 0
+        self.last_card = ()
         
 
     def play_card(self,game_board):
