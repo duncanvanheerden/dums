@@ -13,7 +13,7 @@ class Play():
 
     def __init__(self):
         """
-        Initialize the Play class.
+        Initialize the Dums class.
         """
         self.game = Game()
         self.left_end = None
@@ -24,14 +24,13 @@ class Play():
         """
         Run the dums game.
         """   
-        win = self.check_win()
-        
-        while not win: # Game is not won, play round
+        self.check_game_win()
+        while not self.game.game_win: # Game is not won, play round
             self.game.setup_game()
             print("score limit:", self.game.score_limit)
             print("round:", self.game.round)
             self.play_round()
-            win = self.check_win()
+            self.check_game_win()
 
 
     @staticmethod
@@ -75,20 +74,17 @@ class Play():
             return False
 
 
-    def check_win(self):
+    def check_game_win(self):
         """
         Check if a player has won enough rounds to win the game.
-
-        Returns:
-            boolean: True if any player has won enough rounds to win the game, False otherwise.
         """
         for value in self.game.players:
             player = self.game.players[value]
             if player.wins >= self.game.score_limit:
+                self.set_game_winner(player)
                 # print(CLEAR, CLEAR_AND_RETURN)
-                self.center_text(f"{value} has won the game")
-                return True
-        return False
+                self.center_text(f"{self.get_game_winner()} has won the game")
+                self.game.game_win = True
 
 
     def able_to_play(self, player):
@@ -291,7 +287,7 @@ class Play():
             player_totals.append(player.total_count)
         
 
-    def check_round_win(self, player):
+    def check_round_win(self):
         """
         Check if the player has won the current round.
 
@@ -301,18 +297,19 @@ class Play():
         Returns:
             bool: True if the player has won the round, False otherwise.
         """
-        tell_game_win, tell_game_winner = self.lowest_total_win_case(self.game.players) 
-        if tell_game_win and all(not self.able_to_play(self.game.players[value]) for value in self.game.players):
-            tell_game_winner.wins += 2
-            return True
-        elif not tell_game_win and all(not self.able_to_play(self.game.players[value]) for value in self.game.players):
-            return False
-        elif len(player.deck) == 0:
-            player.wins += 1
-            self.game.round += 1
-            return True
-        else:
-            return False
+        # tell_game_win, tell_game_winner = self.lowest_total_win_case(self.game.players) 
+        # if tell_game_win and all(not self.able_to_play(self.game.players[value]) for value in self.game.players):
+        #     tell_game_winner.wins += 2
+        #     return True
+        # elif not tell_game_win and all(not self.able_to_play(self.game.players[value]) for value in self.game.players):
+        #     return False
+        for value in self.game.players:
+            player = self.game.players[value]
+            if len(player.deck) == 0:
+                self.set_round_winner(player)
+                player.wins += 1
+                self.game.round += 1
+                self.game.round_win = True
 
 
     def display_gameboard(self):
@@ -322,25 +319,61 @@ class Play():
         self.center_text(f"LEFT --> {self.game.game_board} <-- RIGHT")
 
 
+    def set_game_winner(self, player):
+        """
+        Sets the winner of the game.
+
+        Args:
+            player (object): Player that has won the game.
+        """        
+        self.game.game_winner = player
+
+
+    def get_game_winner(self):
+        """
+        Returns:
+            player (object): The winner of the game.
+        """   
+        return self.game.game_winner
+
+
+    def set_round_winner(self, player):
+        """
+        Sets the winner of the round.
+
+        Args:
+            player (object): Player that has won the round.
+        """  
+        self.game.round_winner = player
+
+
+    def get_round_winner(self):
+        """
+        Returns:
+            player (object): The winner of the round.
+        """       
+        return self.game.round_winner
+
+
     def play_round(self):
         """
         Play a round of the game.
         """
-        round_win = False
-
-        while round_win == False:
+        self.check_round_win()
+        while self.game.round_win == False:
             for value in self.game.players:
                 player = self.game.players[value]
                 self.display_gameboard()
                 print("Player wins:", player.wins)
                 self.handle_play(player)
-                round_win = self.check_round_win(player)
-                if round_win == True:
-                    print("Wins:", player.wins)
+                self.check_round_win()
+                if self.game.round_win == True:
+                    print("Wins:", self.get_round_winner().wins)
                     break
-                elif self.lowest_total_win_case(self.game.players)[0] == False:
-                    break
-        self.update_ends(True)        
+                # elif self.lowest_total_win_case(self.game.players)[0] == False:
+                #     break
+        self.update_ends(True)
+        self.game.round_win = False        
 
 
 if __name__ == '__main__':

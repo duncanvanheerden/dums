@@ -25,6 +25,10 @@ class Game:
         self.players = {}
         self.score_limit = 0
         self.round = 1
+        self.game_win = False
+        self.round_win = False
+        self.round_winner = None
+        self.game_winner = None
 
 
     @staticmethod
@@ -172,7 +176,8 @@ class Game:
     def setup_new_round(self):
         """
         * Sets up a new round of the game.
-        """    
-        self.player_decks = self.divide_cards(len(self.players))
+        """   
+        num_of_players =  len(self.players)
+        self.player_decks = self.divide_cards(num_of_players)
         self.set_player_dict()
         self.game_board = []
