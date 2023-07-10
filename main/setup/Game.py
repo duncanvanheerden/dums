@@ -1,13 +1,12 @@
 import random
 import questionary
 
-from main.client.player.player import Player
-
+from main.client.player.player import Player, CPUPlayer
 
 class Game:
 
 
-    def __init__(self):
+    def __init__(self, dums):
         """
         * Game constructor.
 
@@ -18,7 +17,8 @@ class Game:
         * players_and_cards: dictionary of Key = players and Value = cards.
         * score_limit: maximum score.
         * round: number of rounds.
-        """        
+        """  
+        self.dums = dums      
         self.cards = self.shuffle_cards()
         self.player_decks = []
         self.game_board = []
@@ -126,9 +126,13 @@ class Game:
             player_key = f"Player {num + 1}"
             player = self.players.get(player_key)
 
-            if player is None:
-                player = Player()
+            if player is None and len(self.players)<1:
+                player = Player(self.dums)
                 self.players[player_key] = player
+            elif player is None:
+                player = CPUPlayer(self.dums)
+                self.players[player_key] = player
+
 
             player.set_player_deck(deck)
         

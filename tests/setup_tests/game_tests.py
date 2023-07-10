@@ -7,6 +7,7 @@ sys.path.append(root_directory)
 
 
 import unittest
+from Dums import Dums
 from main.setup.Game import Game
 from main.client.player.player import Player
 
@@ -15,21 +16,24 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_shuffle_cards(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         cards = game.shuffle_cards()
         self.assertEqual(len(cards), 28)  # Check if all cards are present
         self.assertEqual(len(set(cards)), 28)  # Check if all cards are unique
 
 
     def test_divide_cards(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         decks = game.divide_cards(2)
         self.assertEqual(len(decks), 2)  # Check if the cards are divided into 2 player decks      
         self.assertEqual(len(decks[0]), 14)  # Check if each player deck has the correct number of cards
 
 
     def test_choose_mode(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         game.choose_mode(4)
         self.assertEqual(len(game.player_decks), 4)  # Check if the player decks are created
         self.assertEqual(len(game.player_decks[0]), 7)  # Check if each player deck has the correct number of cards
@@ -37,14 +41,16 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_get_first_to_play(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         game.choose_mode(4)
         first_player = game.get_first_to_play()
         self.assertTrue(first_player.count((6,6))>0)  # Check if the correct player deck is returned
 
 
     def test_set_player_dict_round1(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         game.cards = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6),
                     (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6),(1, 2),
                     (1, 3), (1, 4), (1, 5), (1, 6), (2, 3),(2, 4),(2, 5), 
@@ -58,10 +64,10 @@ class MyTestCase(unittest.TestCase):
         game.set_player_dict()
 
         expected_players = {
-            "Player 1": Player(),
-            "Player 2": Player(),
-            "Player 3": Player(),
-            "Player 4": Player()
+            "Player 1": Player(game.dums),
+            "Player 2": Player(game.dums),
+            "Player 3": Player(game.dums),
+            "Player 4": Player(game.dums)
         }
 
         expected_players["Player 1"].set_player_deck([(6, 6), (0, 1), (0, 2)])
@@ -80,7 +86,8 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_set_player_dict_round2(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         game.cards = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6),
                     (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (1, 2),
                     (1, 3), (1, 4), (1, 5), (1, 6), (2, 3), (2, 4), (2, 5),
@@ -96,10 +103,10 @@ class MyTestCase(unittest.TestCase):
 
         # Expected player decks for round 1
         expected_players_round1 = {
-            "Player 1": Player(),
-            "Player 2": Player(),
-            "Player 3": Player(),
-            "Player 4": Player()
+            "Player 1": Player(game.dums),
+            "Player 2": Player(game.dums),
+            "Player 3": Player(game.dums),
+            "Player 4": Player(game.dums)
         }
 
         expected_players_round1["Player 1"].set_player_deck([(6, 6), (0, 1), (0, 2)])
@@ -123,10 +130,10 @@ class MyTestCase(unittest.TestCase):
 
         # Expected player decks for round 2
         expected_players_round2 = {
-            "Player 1": Player(),
-            "Player 2": Player(),
-            "Player 3": Player(),
-            "Player 4": Player()
+            "Player 1": Player(game.dums),
+            "Player 2": Player(game.dums),
+            "Player 3": Player(game.dums),
+            "Player 4": Player(game.dums)
         }
 
         expected_players_round2["Player 1"].set_player_deck([(1, 2), (2, 3), (2, 4)])
@@ -141,7 +148,8 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_arrange_player_order(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         game.choose_mode(4)
         arranged_decks = game.arrange_player_order()
         first_player = arranged_decks[0]
@@ -150,7 +158,8 @@ class MyTestCase(unittest.TestCase):
 
 
     def test_set_score_limit(self):
-        game = Game()
+        dums = Dums()
+        game = Game(dums)
         game.set_score_limit(5)
         self.assertEqual(game.score_limit, 5)  # Check if the score limit is set correctly
 

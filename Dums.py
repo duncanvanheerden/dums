@@ -6,7 +6,7 @@ import questionary
 CLEAR = "\033[2J"
 CLEAR_AND_RETURN = "\033[H"
 
-class Play():
+class Dums():
     """
     This class represents the gameplay of the dums game.
     """
@@ -15,7 +15,7 @@ class Play():
         """
         Initialize the Dums class.
         """
-        self.game = Game()
+        self.game = Game(self)
         self.left_end = None
         self.right_end = None
             
@@ -64,13 +64,10 @@ class Play():
             bool: True if the card is valid, False otherwise.
         """
         if left_side == None and right_side == None:
-            print("should still work")
             return True
         elif card[0] in (left_side, right_side) or card[1] in (left_side, right_side):
-            print("should work")
             return True
         else: 
-            print("what am i doing here")
             return False
 
 
@@ -83,7 +80,7 @@ class Play():
             if player.wins >= self.game.score_limit:
                 self.set_game_winner(player)
                 # print(CLEAR, CLEAR_AND_RETURN)
-                self.center_text(f"{self.get_game_winner()} has won the game")
+                self.center_text(f"{self.get_game_winner().name} has won the game")
                 self.game.game_win = True
 
 
@@ -115,23 +112,6 @@ class Play():
         print(output)
 
 
-    def choose_side_to_play(self, card):
-        """
-        Prompt the user to choose which end of the board they want to place their card.
-
-        Args:
-            card (tuple): Card to be played.
-        """
-        side_choices = ["left", "right"]   
-        selected_side = questionary.select("Choose a side to place your card:", choices=side_choices).ask()
-        if selected_side == "left":
-            flipped_card = self.flip_card(card, True)
-            self.game.game_board.insert(0, flipped_card)
-        else:
-            flipped_card = self.flip_card(card, False)
-            self.game.game_board.append(flipped_card)
-
-
     def play_card_on_board(self, card, play_left):
         """
         Play the card on the game board.
@@ -145,44 +125,6 @@ class Play():
             self.game.game_board.insert(0, flipped_card)
         else:
             self.game.game_board.append(flipped_card)
-
-
-    def choose_card_to_play(self, player):
-        """
-        Prompt the player to choose a card from their deck of cards.
-
-        Args:
-            player (class): Player object representing the player.
-
-        Returns:
-            card_to_play (tuple): _description_
-        """        
-        choices = [f"{card[0]}-{card[1]}" for card in player.deck]
-        card_to_play = questionary.select("Choose a card:", choices=choices).ask()
-        card_to_play = tuple(map(int, card_to_play.split("-")))
-        return card_to_play            
-
-
-    def play_card(self, player):
-        """
-        Play a card from the player's deck.
-
-        Args:
-            player: Player object representing the player.
-        """
-        card_to_play = self.choose_card_to_play(player)
-        while(self.is_valid_card(card_to_play, self.left_end, self.right_end) == False):
-            card_to_play = self.choose_card_to_play(player)
-
-        if not self.game.game_board:
-            self.game.game_board.append(card_to_play)
-        elif self.can_play(card_to_play, True) and not self.can_play(card_to_play, False):
-            self.play_card_on_board(card_to_play, True)
-        elif self.can_play(card_to_play, False) and not self.can_play(card_to_play, True):
-            self.play_card_on_board(card_to_play, False)
-        else:
-            self.choose_side_to_play(card_to_play)
-        player.deck.remove(card_to_play)
 
 
     def can_play(self, card, play_left):
@@ -235,11 +177,11 @@ class Play():
         if len(player.deck) == 1:
             player.last_card = player.deck[0]
         if self.able_to_play(player):
-            self.play_card(player)
+            player.play_card()
             self.update_ends(False)
             return True
         else:
-            print(f"{player} has klopped!!!")
+            print(f"{player.name} has klopped!!!")
             self.update_ends(False)
             return False
 
@@ -364,11 +306,11 @@ class Play():
             for value in self.game.players:
                 player = self.game.players[value]
                 self.display_gameboard()
-                print("Player wins:", player.wins)
+                print(f"{player.name}'s turn, Points = {player.wins}")
                 self.handle_play(player)
                 self.check_round_win()
                 if self.game.round_win == True:
-                    print("Wins:", self.get_round_winner().wins)
+                    print(self.center_text(f"{player.name} Wins the round, Points = {self.get_round_winner().wins}"))
                     break
                 # elif self.lowest_total_win_case(self.game.players)[0] == False:
                 #     break
@@ -377,4 +319,4 @@ class Play():
 
 
 if __name__ == '__main__':
-    Play().rungame()
+    Dums().rungame()
