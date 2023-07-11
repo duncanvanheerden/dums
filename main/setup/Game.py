@@ -1,12 +1,12 @@
 import random
+import questionary
 
-from main.client.player.player import Player
-
+from main.client.player.player import Player, CPUPlayer
 
 class Game:
 
 
-    def __init__(self):
+    def __init__(self, dums):
         """
         * Game constructor.
 
@@ -17,13 +17,18 @@ class Game:
         * players_and_cards: dictionary of Key = players and Value = cards.
         * score_limit: maximum score.
         * round: number of rounds.
-        """        
+        """  
+        self.dums = dums      
         self.cards = self.shuffle_cards()
         self.player_decks = []
         self.game_board = []
         self.players = {}
         self.score_limit = 0
         self.round = 1
+        self.game_win = False
+        self.round_win = False
+        self.round_winner = None
+        self.game_winner = None
 
 
     @staticmethod
@@ -107,27 +112,29 @@ class Game:
         for deck in self.player_decks:
             if deck.count((6,6))>0:
                 return deck
-
     
+
     def set_player_dict(self):
         """
         * Sets the play order as a dictionary.
         * Key: player (e.g., "Player 1").
         * Value: player deck.
         """
-        if self.round == 1:
-            arranged_cards = self.arrange_player_order()
-            for num, deck in enumerate(arranged_cards):
-                player_key = "Player " + str(num + 1)
-                player = Player()
-                player.set_player_deck(deck)
+        arranged_cards = self.arrange_player_order() if self.round == 1 else self.player_decks
+
+        for num, deck in enumerate(arranged_cards):
+            player_key = f"Player {num + 1}"
+            player = self.players.get(player_key)
+
+            if player is None and len(self.players)<1:
+                player = Player(self.dums)
                 self.players[player_key] = player
-        else:
-            arranged_cards = self.player_decks 
-            for num, deck in enumerate(arranged_cards):
-                player_key = "Player " + str(num + 1)
-                player = self.players[player_key]
-                player.set_player_deck(deck)
+            elif player is None:
+                player = CPUPlayer(self.dums)
+                self.players[player_key] = player
+
+
+            player.set_player_deck(deck)
         
             
     def arrange_player_order(self):
@@ -156,24 +163,25 @@ class Game:
 
     def setup_game(self):
         """
-        * Prompt the host to setup the game.
+        Prompt the host to set up the game.
         """    
         if self.round == 1:
-            num_of_players = int(input(("how many players: ")))
-            score_limit = int(input(("set the score limit: ")))
-            self.choose_mode(num_of_players)
-            self.set_score_limit(score_limit)
+            player_num_opt = ["2","3","4"]
+            score_limit_opt = ["1","2","3","4","5"]
+            num_of_players = questionary.select("How many players (2-4):",choices=player_num_opt).ask()
+            score_limit = questionary.select("Set the score limit (1-5):",choices=score_limit_opt).ask()
+            self.choose_mode(int(num_of_players))
+            self.set_score_limit(int(score_limit))
             self.set_player_dict()
         else:
-            self.setup_new_round()    
-
+            self.setup_new_round()
+    
 
     def setup_new_round(self):
         """
-        * sets up a new round of the game.
-        """    
-        self.player_decks = self.divide_cards(len(self.players))
+        * Sets up a new round of the game.
+        """   
+        num_of_players =  len(self.players)
+        self.player_decks = self.divide_cards(num_of_players)
         self.set_player_dict()
         self.game_board = []
-
-
