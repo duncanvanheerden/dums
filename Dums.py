@@ -1,5 +1,6 @@
 from main.setup.Game import Game
 from pprint import pprint
+from main.interface.Interface import Interface
 import shutil
 import questionary
 
@@ -24,13 +25,14 @@ class Dums():
         """
         Run the dums game.
         """   
-        self.check_game_win()
-        while not self.game.game_win: # Game is not won, play round
-            self.game.setup_game()
-            print("score limit:", self.game.score_limit)
-            print("round:", self.game.round)
-            self.play_round()
-            self.check_game_win()
+        Interface.window(self)
+        # self.check_game_win()
+        # while not self.game.game_win: # Game is not won, play round
+        #     self.game.setup_game()
+        #     print("score limit:", self.game.score_limit)
+        #     print("round:", self.game.round)
+        #     self.play_round()
+        #     self.check_game_win()
 
 
     @staticmethod

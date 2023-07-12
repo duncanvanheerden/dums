@@ -12,14 +12,17 @@ class Interface():
 
     def window(self):
         # Set the dimensions of the window
-        # width = 1200
-        # height = 690
+        width = 0
+        height = 0
         
         # Get current working directory
         cwd = os.getcwd()
 
         # Create the window display
-        screen = pg.display.set_mode((0, 0), pg.FULLSCREEN)
+        # screen = pg.display.set_mode((width, height))
+        
+        #Create a Full screen
+        screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
 
         # Set the title of the window
         pg.display.set_caption("My Pygame Window")
@@ -34,17 +37,19 @@ class Interface():
         playerVplayerVplayer_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/1v1_button.png'))
         player2Vplayer2_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/1v1_button.png'))
         exit_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/exit_button.png'))
-
+        options_img = pg.image.load(os.path.join(cwd, 'main/interface/Button/img/options_button.png'))
+        
         #create button instances
-        start_button = button.Button(500, 0, start_img, 0.5)
-        rules_button = button.Button(500, 200, rules_img, 1.2)
-        singlePlay_button = button.Button(500, 200, singlePlay_img, 0.5)
-        multiplay_button = button.Button(500, 400, multiplay_img, 0.5)
-        homescreen = button.Button(500, 600, homescreen_img, 1)
-        playerVplayer_button = button.Button(500, 0, playerVplayer_img, 0.5)
-        playerVplayerVplayer_button = button.Button(500, 200, playerVplayerVplayer_img, 0.5)
-        player2Vplayer2_button = button.Button(500, 400, player2Vplayer2_img, 0.5)
-        exit_button = button.Button(500, 400, exit_img, 0.5)
+        #Start menu buttons
+        start_button = button.Button(600, 300, start_img, 0.5)
+        rules_button = button.Button(600, 400, rules_img, 0.5)
+        options_button = button.Button(600, 500, options_img, 0.5)
+        exit_button = button.Button(600, 600, exit_img, 0.5)
+        
+        #Game mode menu buttons
+        singlePlay_button = button.Button(600, 200, singlePlay_img, 0.2)
+        multiplay_button = button.Button(600, 300, multiplay_img, 0.2)
+        homescreen = button.Button(500, 500, homescreen_img, 0.5)
         
         start_menu = "main"
         
@@ -61,12 +66,15 @@ class Interface():
                     start_menu = "play"
                     pass
                 
+                if rules_button.draw(screen):
+                    start_menu = "rules"
+                    
+                if options_button.draw(screen):
+                    start_menu = "options"
+                    
                 if exit_button.draw(screen):
                     running = False
                     
-                if rules_button.draw(screen):
-                    start_menu = "rules"
-                
             
             if start_menu == "play":
                 
@@ -78,6 +86,7 @@ class Interface():
                     print("multiplay")
                     
                 if homescreen.draw(screen):
+                    print("time")
                     start_menu = "main"
                     
             if start_menu == "rules":
