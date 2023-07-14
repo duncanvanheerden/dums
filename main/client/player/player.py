@@ -1,7 +1,7 @@
 import questionary
 import random
 
-cpu_names = ["CPU-RusselBeerMag", "CPU-Mr.Wes", "CPU-Chella"]
+cpu_names = ["CPU-RusselBeerMag", "CPU-Mr.Wes", "CPU-Chella", "CPU-Jade"]
 
 class Player:
 
@@ -10,7 +10,7 @@ class Player:
         * Player constructor.
 
         * Initializes the variables:
-        * wins: the number of rounds won.
+        * points: the number of rounds won.
         * deck: the players deck of cards.
         * name: the name of the player.
         * has_valid_card: whether the player has a valid card.
@@ -20,7 +20,7 @@ class Player:
             dums (class): the class that runs the game.
         """ 
         self.dums = dums
-        self.wins = 0
+        self.points = 0
         self.deck = []
         self.name = self.set_player_name()
         self.has_valid_card = True
@@ -28,13 +28,20 @@ class Player:
         self.last_card = ()
 
 
+    def __str__(self):
+        return f"Name: {self.name}, Points: {self.points} "    
+
+
     def set_player_name(self):
         """
         * Prompts the user for the name of the player
 
         Returns (str): Player name.
-        """   
-        return str(input("Enter your name: "))        
+        """  
+        name = str(input("Enter your name: "))
+        while not name.isalnum():
+            name = str(input("Enter your name: "))
+        return name     
         
 
     def play_card(self):
