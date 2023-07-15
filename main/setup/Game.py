@@ -1,5 +1,6 @@
 import random
 import questionary
+from collections import OrderedDict
 
 from main.client.player.player import Player, CPUPlayer
 
@@ -145,11 +146,11 @@ class Game:
         Returns:
             list: re-arranged list of player decks.
         """        
-        player_1 = self.get_first_to_play()
+        player_1_deck = self.get_first_to_play()
         new_deck_order = []
-        new_deck_order.append(player_1)
+        new_deck_order.append(player_1_deck)
         for player_deck in self.player_decks:
-            if player_deck != player_1:
+            if player_deck != player_1_deck:
                 new_deck_order.append(player_deck)
         return new_deck_order
 
@@ -184,4 +185,6 @@ class Game:
         num_of_players =  len(self.players)
         self.player_decks = self.divide_cards(num_of_players)
         self.set_player_dict()
+        self.players = OrderedDict(self.players)
+        self.players.move_to_end(list(self.players.keys())[0])
         self.game_board = []

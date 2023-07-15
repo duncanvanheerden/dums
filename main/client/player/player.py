@@ -29,7 +29,7 @@ class Player:
 
 
     def __str__(self):
-        return f"Name: {self.name}, Points: {self.points} "    
+        return f"Name: {self.name}, Points: {self.points}, Deck: {self.deck}"    
 
 
     def set_player_name(self):

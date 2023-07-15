@@ -1,7 +1,5 @@
 from main.setup.Game import Game
-from pprint import pprint
 import shutil
-import questionary
 
 # CLEAR = "\033[2J"
 # CLEAR_AND_RETURN = "\033[H"
@@ -93,7 +91,7 @@ class Dums():
             if player.points >= self.game.score_limit:
                 self.set_game_winner(player)
                 # print(CLEAR, CLEAR_AND_RETURN)
-                self.center_text(f"Winner: {self.get_game_winner()}")
+                self.center_text(f"[WINNER]: {self.get_game_winner()}")
                 self.game.game_win = True
 
 
@@ -121,7 +119,6 @@ class Dums():
         left_padding = (terminal_width - len(text)) // 2
         centered_text = " " * left_padding + text
         output = '\n' + centered_text + '\n'
-        # print(CLEAR, CLEAR_AND_RETURN)
         return output
 
 
@@ -194,7 +191,7 @@ class Dums():
             self.update_ends(False)
             return True
         else:
-            print(f"{player.name} has klopped!!!")
+            print(self.center_text(f"[UNABLE TO PLAY]: {player.name}"))
             self.update_ends(False)
             return False
 
@@ -239,7 +236,7 @@ class Dums():
         self.tell_game_winner = self.lowest_total_win_case()
         self.no_one_able_to_play = all(not self.able_to_play(self.game.players[value]) for value in self.game.players)
         self.nobody_wins_round = (self.tell_game_winner is None and self.no_one_able_to_play)
-        if self.no_one_able_to_play:
+        if self.no_one_able_to_play and not self.nobody_wins_round:
             self.tell_game_winner = self.lowest_total_win_case()
             return True
         return False
@@ -290,20 +287,20 @@ class Dums():
         """ 
         Check if a player has won the current round. 
         """ 
-        if self.tell_game(): 
-            print(self.center_text("!!!LOWEST TOTAL WIN!!!"))
-            self.set_round_winner(self.tell_game_winner) 
-            self.get_round_winner().points += 2 
-            self.game.round += 1 
-            self.game.round_win = True  
         if self.milo_win(): 
-            print(self.center_text("!!!MILO WIN!!!"))
+            print(self.center_text("[MILO WIN]"))
             self.set_round_winner(self.milo_game_winner) 
             self.get_round_winner().points += 2 
             self.game.round += 1 
             self.game.round_win = True 
+        elif self.tell_game(): 
+            print(self.center_text("[LOWEST TOTAL WIN]"))
+            self.set_round_winner(self.tell_game_winner) 
+            self.get_round_winner().points += 2 
+            self.game.round += 1 
+            self.game.round_win = True  
         elif self.standard_game_win(): 
-            print(self.center_text("!!!STANDARD WIN!!!"))
+            print(self.center_text("[STANDARD WIN]"))
             self.set_round_winner(self.standard_game_winner) 
             self.get_round_winner().points += 1 
             self.game.round += 1 
@@ -314,6 +311,7 @@ class Dums():
         """
         Display the current state of the game board.
         """
+        print(self.center_text("[GAME BOARD BELOW]"))
         print(self.center_text(f"LEFT --> {self.game.game_board} <-- RIGHT"))
 
 
@@ -357,21 +355,24 @@ class Dums():
         """
         Play a round of the game.
         """
-        self.check_round_win()
-        while self.game.round_win == False:
+        # self.check_round_win()
+        while not self.game.round_win:
             for value in self.game.players:
                 player = self.game.players[value]
+                print(self.center_text(f"[ROUND {self.game.round}]"))
                 self.display_gameboard()
-                print(self.center_text(f"This players turn: {player}"))
+                print(self.center_text(f"[PLAYER'S TURN]: {player}"))
                 self.handle_play(player)
                 self.check_round_win()
                 if self.game.round_win == True:
-                    print(self.center_text(f"Round Winner: {self.get_round_winner()}"))
+                    print(self.center_text(f"[ROUND WINNER]: {self.get_round_winner()}"))
                     break
                 elif self.nobody_wins_round and self.no_one_able_to_play:
                     self.nobody_wins_round = False
-                    print(self.center_text(f"Nobody wins this round."))
+                    print(self.center_text(f"[NOBODY WINS THIS ROUND]"))
                     break
+        self.display_gameboard()        
+        # print(self.center_text(str(self.game.players)))        
         self.reset_round_specific_variables()       
 
 
