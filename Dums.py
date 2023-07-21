@@ -226,7 +226,7 @@ class Dums():
         min_total = min(player_totals)
         for value in players:
             player = players[value]
-            if player_totals.count(min_total) > 1:
+            if player_totals.count(min_total) > 1 or len(player.deck) == 0:
                 return None
             elif min_total == player.total_count:
                 return player
@@ -355,7 +355,6 @@ class Dums():
         """
         Play a round of the game.
         """
-        # self.check_round_win()
         while not self.game.round_win:
             for value in self.game.players:
                 player = self.game.players[value]
@@ -372,7 +371,6 @@ class Dums():
                     print(self.center_text(f"[NOBODY WINS THIS ROUND]"))
                     break
         self.display_gameboard()        
-        # print(self.center_text(str(self.game.players)))        
         self.reset_round_specific_variables()       
 
 
