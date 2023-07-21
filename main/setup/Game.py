@@ -134,7 +134,6 @@ class Game:
                 player = CPUPlayer(self.dums)
                 self.players[player_key] = player
 
-
             player.set_player_deck(deck)
         
             
@@ -181,7 +180,8 @@ class Game:
     def setup_new_round(self):
         """
         * Sets up a new round of the game.
-        """   
+        """  
+        self.cards = self.shuffle_cards() 
         num_of_players =  len(self.players)
         self.player_decks = self.divide_cards(num_of_players)
         self.set_player_dict()
