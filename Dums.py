@@ -63,8 +63,7 @@ class Dums():
         )
 
 
-    @staticmethod
-    def is_valid_card(card, left_side, right_side):
+    def is_valid_card(self, card, left_side, right_side):
         """
         Checks if the card a player wants to place on the game board is valid.
 
@@ -74,7 +73,11 @@ class Dums():
         Returns: 
             bool: True if the card is valid, False otherwise.
         """
-        if left_side == None and right_side == None:
+        if len(self.game.game_board)==0 and self.game.round==1:
+            return card[0]==6 and card[1]==6
+        elif len(self.game.game_board)==0:
+            return card[0]==card[1]  
+        elif left_side == None and right_side == None:
             return True
         elif card[0] in (left_side, right_side) or card[1] in (left_side, right_side):
             return True
