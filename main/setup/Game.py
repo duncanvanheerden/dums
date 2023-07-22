@@ -118,22 +118,20 @@ class Game:
     def set_player_dict(self):
         """
         * Sets the play order as a dictionary.
-        * Key: player (e.g., "Player 1").
-        * Value: player deck.
+        * Key(num): player (e.g., "Player 1").
+        * Value(deck): player deck.
         """
         arranged_cards = self.arrange_player_order() if self.round == 1 else self.player_decks
-
+        players_list = ["Player"] + ["CPU"] * (len(arranged_cards) - 1)
+        random.shuffle(players_list)
+        
         for num, deck in enumerate(arranged_cards):
             player_key = f"Player {num + 1}"
             player = self.players.get(player_key)
-
-            if player is None and len(self.players)<1:
-                player = Player(self.dums)
+            if player is None:
+                player_type = Player if players_list[num] == "Player" else CPUPlayer
+                player = player_type(self.dums)
                 self.players[player_key] = player
-            elif player is None:
-                player = CPUPlayer(self.dums)
-                self.players[player_key] = player
-
             player.set_player_deck(deck)
         
             
