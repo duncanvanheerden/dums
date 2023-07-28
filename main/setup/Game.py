@@ -1,5 +1,6 @@
 import random
 import questionary
+from collections import OrderedDict
 
 from main.client.player.player import Player, CPUPlayer
 
@@ -117,23 +118,20 @@ class Game:
     def set_player_dict(self):
         """
         * Sets the play order as a dictionary.
-        * Key: player (e.g., "Player 1").
-        * Value: player deck.
+        * Key(num): player (e.g., "Player 1").
+        * Value(deck): player deck.
         """
         arranged_cards = self.arrange_player_order() if self.round == 1 else self.player_decks
-
+        players_list = ["Player"] + ["CPU"] * (len(arranged_cards) - 1)
+        random.shuffle(players_list)
+        
         for num, deck in enumerate(arranged_cards):
             player_key = f"Player {num + 1}"
             player = self.players.get(player_key)
-
-            if player is None and len(self.players)<1:
-                player = Player(self.dums)
+            if player is None:
+                player_type = Player if players_list[num] == "Player" else CPUPlayer
+                player = player_type(self.dums)
                 self.players[player_key] = player
-            elif player is None:
-                player = CPUPlayer(self.dums)
-                self.players[player_key] = player
-
-
             player.set_player_deck(deck)
         
             
@@ -145,11 +143,11 @@ class Game:
         Returns:
             list: re-arranged list of player decks.
         """        
-        player_1 = self.get_first_to_play()
+        player_1_deck = self.get_first_to_play()
         new_deck_order = []
-        new_deck_order.append(player_1)
+        new_deck_order.append(player_1_deck)
         for player_deck in self.player_decks:
-            if player_deck != player_1:
+            if player_deck != player_1_deck:
                 new_deck_order.append(player_deck)
         return new_deck_order
 
@@ -180,8 +178,11 @@ class Game:
     def setup_new_round(self):
         """
         * Sets up a new round of the game.
-        """   
+        """  
+        self.cards = self.shuffle_cards() 
         num_of_players =  len(self.players)
         self.player_decks = self.divide_cards(num_of_players)
         self.set_player_dict()
+        self.players = OrderedDict(self.players)
+        self.players.move_to_end(list(self.players.keys())[0])
         self.game_board = []

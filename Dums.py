@@ -1,11 +1,8 @@
 from main.setup.Game import Game
-from pprint import pprint
-from main.interface.Interface import Interface
 import shutil
-import questionary
 
-CLEAR = "\033[2J"
-CLEAR_AND_RETURN = "\033[H"
+# CLEAR = "\033[2J"
+# CLEAR_AND_RETURN = "\033[H"
 
 class Dums():
     """
@@ -19,20 +16,32 @@ class Dums():
         self.game = Game(self)
         self.left_end = None
         self.right_end = None
-            
+        self.nobody_wins_round = False
+        self.no_one_able_to_play = False
+        self.tell_game_winner = None
+        self.milo_game_winner = None
+        self.standard_game_winner = None
+
+
+    def reset_round_specific_variables(self):  
+        self.update_ends(True)   
+        self.nobody_wins_round = False
+        self.no_one_able_to_play = False
+        self.tell_game_winner = None
+        self.milo_game_winner = None
+        self.standard_game_winner = None 
+        self.game.round_win = False  
+
 
     def rungame(self):
         """
         Run the dums game.
         """   
-        Interface.window(self)
-        # self.check_game_win()
-        # while not self.game.game_win: # Game is not won, play round
-        #     self.game.setup_game()
-        #     print("score limit:", self.game.score_limit)
-        #     print("round:", self.game.round)
-        #     self.play_round()
-        #     self.check_game_win()
+        self.check_game_win()
+        while not self.game.game_win: # Game is not won, play round
+            self.game.setup_game()
+            self.play_round()
+            self.check_game_win()
 
 
     @staticmethod
@@ -54,8 +63,7 @@ class Dums():
         )
 
 
-    @staticmethod
-    def is_valid_card(card, left_side, right_side):
+    def is_valid_card(self, card, left_side, right_side):
         """
         Checks if the card a player wants to place on the game board is valid.
 
@@ -65,7 +73,11 @@ class Dums():
         Returns: 
             bool: True if the card is valid, False otherwise.
         """
-        if left_side == None and right_side == None:
+        if len(self.game.game_board)==0 and self.game.round==1:
+            return card[0]==6 and card[1]==6
+        elif len(self.game.game_board)==0:
+            return card[0]==card[1]  
+        elif left_side == None and right_side == None:
             return True
         elif card[0] in (left_side, right_side) or card[1] in (left_side, right_side):
             return True
@@ -79,10 +91,10 @@ class Dums():
         """
         for value in self.game.players:
             player = self.game.players[value]
-            if player.wins >= self.game.score_limit:
+            if player.points >= self.game.score_limit:
                 self.set_game_winner(player)
                 # print(CLEAR, CLEAR_AND_RETURN)
-                self.center_text(f"{self.get_game_winner().name} has won the game")
+                self.center_text(f"[WINNER]: {self.get_game_winner()}")
                 self.game.game_win = True
 
 
@@ -110,8 +122,7 @@ class Dums():
         left_padding = (terminal_width - len(text)) // 2
         centered_text = " " * left_padding + text
         output = '\n' + centered_text + '\n'
-        # print(CLEAR, CLEAR_AND_RETURN)
-        print(output)
+        return output
 
 
     def play_card_on_board(self, card, play_left):
@@ -144,7 +155,7 @@ class Dums():
         return card[0] == side or card[1] == side
 
 
-    def flip_card(self, card, play_left):
+    def flip_card(self, card=tuple, play_left=bool)->tuple:
         """
         Flip the card based on the board end and the play direction.
 
@@ -166,12 +177,12 @@ class Dums():
             return (card_end_left, card_end_right)
 
 
-    def handle_play(self, player):
+    def handle_play(self, player=object)->bool:
         """
         Handle the player's turn and play a card if possible.
 
         Args:
-            player: Player object representing the player.
+            player(object): Player object representing the player.
 
         Returns:
             bool: True if the player was able to play a card, False otherwise.
@@ -183,12 +194,12 @@ class Dums():
             self.update_ends(False)
             return True
         else:
-            print(f"{player.name} has klopped!!!")
+            print(self.center_text(f"[UNABLE TO PLAY]: {player.name}"))
             self.update_ends(False)
             return False
 
 
-    def update_ends(self, is_none):
+    def update_ends(self, is_none=bool):
         """
         Update the values of left_end and right_end based on the current state of the game board.
         """
@@ -206,61 +217,105 @@ class Dums():
         """
         for player in self.game.players:
             player = self.game.players[player]
+            player.total_count = 0
             for card in player.deck:
                 player.total_count += card[0]+card[1]
 
 
-    def lowest_total_win_case(self,players):
+    def lowest_total_win_case(self):
+        players = self.game.players
         self.set_sum_of_player_decks()
         player_totals = [players[value].total_count for value in players]
         min_total = min(player_totals)
-        for player in self.game.players:
-            player = self.game.players[player]
-            if player_totals.count(min_total) > 1:
-                return False,player
+        for value in players:
+            player = players[value]
+            if player_totals.count(min_total) > 1 or len(player.deck) == 0:
+                return None
             elif min_total == player.total_count:
-                return True,player
+                return player
 
 
-    def milo_win(self,player):
-        """
-        TODO: Add docstring
-        """
-        player_totals = []
-        for player in self.game.players:
-            player_totals.append(player.total_count)
-        
+    def tell_game(self):
+        self.tell_game_winner = self.lowest_total_win_case()
+        self.no_one_able_to_play = all(not self.able_to_play(self.game.players[value]) for value in self.game.players)
+        self.nobody_wins_round = (self.tell_game_winner is None and self.no_one_able_to_play)
+        if self.no_one_able_to_play and not self.nobody_wins_round:
+            self.tell_game_winner = self.lowest_total_win_case()
+            return True
+        return False
 
-    def check_round_win(self):
-        """
-        Check if the player has won the current round.
+
+    def milo_win(self):
+        """_summary_
 
         Args:
-            player: Player object representing the player.
+            player (object): A player object.
 
         Returns:
-            bool: True if the player has won the round, False otherwise.
+            boolean : True if the game board ends are not equal and the player is able to play both sides,
+            False otherwise.
         """
-        # tell_game_win, tell_game_winner = self.lowest_total_win_case(self.game.players) 
-        # if tell_game_win and all(not self.able_to_play(self.game.players[value]) for value in self.game.players):
-        #     tell_game_winner.wins += 2
-        #     return True
-        # elif not tell_game_win and all(not self.able_to_play(self.game.players[value]) for value in self.game.players):
-        #     return False
+        game_board_copy = list(self.game.game_board)
+        try: 
+            for value in self.game.players:
+                player = self.game.players[value]
+                players_last_card = player.last_card
+                players_last_card_flipped = (player.last_card[1],player.last_card[0])
+                try:
+                    game_board_copy.remove(players_last_card)
+                except:
+                    game_board_copy.remove(players_last_card_flipped)    
+                left_end = game_board_copy[0][0]
+                right_end = game_board_copy[-1][1]
+                can_play_left = player.last_card[0] == left_end or player.last_card[1] == left_end
+                can_play_right = player.last_card[0] == right_end or player.last_card[1] == right_end
+                if not left_end == right_end and len(player.deck) == 0:
+                    self.milo_game_winner = player
+                    return can_play_left == can_play_right
+                else: return False
+        except:
+            return False        
+
+
+    def standard_game_win(self):
         for value in self.game.players:
             player = self.game.players[value]
             if len(player.deck) == 0:
-                self.set_round_winner(player)
-                player.wins += 1
-                self.game.round += 1
-                self.game.round_win = True
+                self.standard_game_winner = player
+                return True
+        return False    
+        
+
+    def check_round_win(self): 
+        """ 
+        Check if a player has won the current round. 
+        """ 
+        if self.milo_win(): 
+            print(self.center_text("[MILO WIN]"))
+            self.set_round_winner(self.milo_game_winner) 
+            self.get_round_winner().points += 2 
+            self.game.round += 1 
+            self.game.round_win = True 
+        elif self.tell_game(): 
+            print(self.center_text("[LOWEST TOTAL WIN]"))
+            self.set_round_winner(self.tell_game_winner) 
+            self.get_round_winner().points += 2 
+            self.game.round += 1 
+            self.game.round_win = True  
+        elif self.standard_game_win(): 
+            print(self.center_text("[STANDARD WIN]"))
+            self.set_round_winner(self.standard_game_winner) 
+            self.get_round_winner().points += 1 
+            self.game.round += 1 
+            self.game.round_win = True 
 
 
     def display_gameboard(self):
         """
         Display the current state of the game board.
         """
-        self.center_text(f"LEFT --> {self.game.game_board} <-- RIGHT")
+        print(self.center_text("[GAME BOARD BELOW]"))
+        print(self.center_text(f"LEFT --> {self.game.game_board} <-- RIGHT"))
 
 
     def set_game_winner(self, player):
@@ -303,21 +358,23 @@ class Dums():
         """
         Play a round of the game.
         """
-        self.check_round_win()
-        while self.game.round_win == False:
+        while not self.game.round_win:
             for value in self.game.players:
                 player = self.game.players[value]
+                print(self.center_text(f"[ROUND {self.game.round}]"))
                 self.display_gameboard()
-                print(f"{player.name}'s turn, Points = {player.wins}")
+                print(self.center_text(f"[PLAYER'S TURN]: {player}"))
                 self.handle_play(player)
                 self.check_round_win()
                 if self.game.round_win == True:
-                    print(self.center_text(f"{player.name} Wins the round, Points = {self.get_round_winner().wins}"))
+                    print(self.center_text(f"[ROUND WINNER]: {self.get_round_winner()}"))
                     break
-                # elif self.lowest_total_win_case(self.game.players)[0] == False:
-                #     break
-        self.update_ends(True)
-        self.game.round_win = False        
+                elif self.nobody_wins_round and self.no_one_able_to_play:
+                    self.nobody_wins_round = False
+                    print(self.center_text(f"[NOBODY WINS THIS ROUND]"))
+                    break
+        self.display_gameboard()        
+        self.reset_round_specific_variables()       
 
 
 if __name__ == '__main__':
