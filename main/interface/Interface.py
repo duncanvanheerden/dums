@@ -61,54 +61,56 @@ class Interface():
             
             if start_menu == "main":
                 # Draw the button
-                if start_button.draw(screen):
-                    print("play")
-                    start_menu = "play"
-                    pass
-                
-                if rules_button.draw(screen):
-                    start_menu = "rules"
-                    
-                if options_button.draw(screen):
-                    start_menu = "options"
-                    
-                if exit_button.draw(screen):
-                    running = False
-                    
-            
+                start_button.draw(screen)
+                rules_button.draw(screen)
+                options_button.draw(screen)
+                exit_button.draw(screen)
+                        
             if start_menu == "play":
-                
-                if singlePlay_button.draw(screen):
-                    start_menu = "single_player"
-                
-                 
-                if multiplay_button.draw(screen):
-                    print("multiplay")
-                    
-                if homescreen.draw(screen):
-                    print("time")
-                    start_menu = "main"
-                    
+                singlePlay_button.draw(screen)
+                multiplay_button.draw(screen)
+                homescreen.draw(screen)
+                        
             if start_menu == "rules":
                 print("rules")
-            
+                
             if start_menu == "single_player":
-                
-                if playerVplayer_button.draw(screen):
-                    print("1v1")
-                
-                if playerVplayerVplayer_button.draw(screen):
-                    print("1v1v1")
-                
-                if player2Vplayer2_button.draw(screen):
-                    print("2v2")
-                        
+                playerVplayer_button.draw(screen)
+                playerVplayerVplayer_button.draw(screen)
+                player2Vplayer2_button.draw(screen)
+                    
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
-
+                elif event.type == pg.MOUSEBUTTONDOWN:
+                    if start_menu == "main":
+                        if start_button.is_clicked(event):
+                            print("play")
+                            start_menu = "play"
+                        elif rules_button.is_clicked(event):
+                            start_menu = "rules"
+                        elif options_button.is_clicked(event):
+                            start_menu = "options"
+                        elif exit_button.is_clicked(event):
+                            running = False
+                    elif start_menu == "play":
+                        if singlePlay_button.is_clicked(event):
+                            start_menu = "single_player"
+                        elif multiplay_button.is_clicked(event):
+                            print("multiplay")
+                        elif homescreen.is_clicked(event):
+                            print("time")
+                            start_menu = "main"
+                    elif start_menu == "single_player":
+                        if playerVplayer_button.is_clicked(event):
+                            print("1v1")
+                        elif playerVplayerVplayer_button.is_clicked(event):
+                            print("1v1v1")
+                        elif player2Vplayer2_button.is_clicked(event):
+                            print("2v2")
+            
             # Add your code for drawing or updating the window here
-
+            
             # Update the display
             pg.display.update()
 
