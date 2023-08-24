@@ -1,4 +1,4 @@
-from main.setup.Game import Game
+from main.setup import Game
 import shutil
 
 # CLEAR = "\033[2J"

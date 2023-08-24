@@ -7,8 +7,8 @@ sys.path.append(root_directory)
 
 
 import unittest
-from Dums import Dums
-from main.setup.Game import Game
+from dums import Dums
+from main.setup.setup import Game
 from main.client.player.player import Player
 
 
