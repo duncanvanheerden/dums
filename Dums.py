@@ -63,7 +63,8 @@ class Dums():
         )
 
 
-    def is_valid_card(self, card, left_side, right_side):
+    @staticmethod
+    def is_valid_card(card, left_side, right_side):
         """
         Checks if the card a player wants to place on the game board is valid.
 
@@ -73,11 +74,7 @@ class Dums():
         Returns: 
             bool: True if the card is valid, False otherwise.
         """
-        if len(self.game.game_board)==0 and self.game.round==1:
-            return card[0]==6 and card[1]==6
-        elif len(self.game.game_board)==0:
-            return card[0]==card[1]  
-        elif left_side == None and right_side == None:
+        if left_side == None and right_side == None:
             return True
         elif card[0] in (left_side, right_side) or card[1] in (left_side, right_side):
             return True
@@ -229,7 +226,7 @@ class Dums():
         min_total = min(player_totals)
         for value in players:
             player = players[value]
-            if player_totals.count(min_total) > 1 or len(player.deck) == 0:
+            if player_totals.count(min_total) > 1:
                 return None
             elif min_total == player.total_count:
                 return player
@@ -358,6 +355,7 @@ class Dums():
         """
         Play a round of the game.
         """
+        # self.check_round_win()
         while not self.game.round_win:
             for value in self.game.players:
                 player = self.game.players[value]
@@ -374,6 +372,7 @@ class Dums():
                     print(self.center_text(f"[NOBODY WINS THIS ROUND]"))
                     break
         self.display_gameboard()        
+        # print(self.center_text(str(self.game.players)))        
         self.reset_round_specific_variables()       
 
 
