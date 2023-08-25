@@ -1,12 +1,34 @@
-import asyncio
-import websockets
+import socket
 
-async def handle_client(websocket, path):
-    async for message in websocket:
-        response_message = f"You sent: {message}"
-        await websocket.send(response_message)
+class ServerConnection():
+    
+    def __init__(self):
+        pass
 
-start_server = websockets.serve(handle_client, "127.0.0.1", 8000)
+    def create_server(self, host, port):
+        server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_socket.bind((host, port))
+        server_socket.listen(1)
+        return server_socket
 
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+    def accept_client(self, server_socket):
+        client_socket, client_address = server_socket.accept()
+        return client_socket, client_address
+
+    def receive_and_print_messages(self, client_socket):
+        while True:
+            message = client_socket.recv(1024).decode()  # Adjust buffer size as needed
+            if not message:
+                break
+            print(f"Received message from client: {message}")
+
+
+if __name__ == "__main__":
+    server_connection = ServerConnection()
+    server_socket = server_connection.create_server('localhost', 8000)
+    print("Server is listening...")
+
+    client_socket, client_address = server_connection.accept_client(server_socket)
+    print(f"Connected to client: {client_address}")
+
+    server_connection.receive_and_print_messages(client_socket)
