@@ -8,8 +8,8 @@ sys.path.append(root_directory)
 
 import unittest
 from dums import Dums
-from main.setup.setup import Game
-from main.client.player.player import Player
+from game_logic.setup.setup import Game
+from game_logic.client.player.player import Player
 
 
 class MyTestCase(unittest.TestCase):

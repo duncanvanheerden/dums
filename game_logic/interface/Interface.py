@@ -1,7 +1,7 @@
 import pygame as pg
 import sys
 import os
-from main.interface.Button import Button as button
+from game_logic.interface.Button import Button as button
 
 fps = 60
 

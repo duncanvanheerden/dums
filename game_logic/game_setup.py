@@ -2,7 +2,7 @@ import random
 import questionary
 from collections import OrderedDict
 
-from main.client.player import Player, CPUPlayer
+from game_logic.player import Player, CPUPlayer
 
 class Game:
 
