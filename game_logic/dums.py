@@ -1,8 +1,6 @@
 import threading
 import shutil
-from game_logic.game_setup import Game
-from network.server_connection import ServerConnection
-from network.client_connection import ClientConnection
+from setup import Game
 
 # CLEAR = "\033[2J"
 # CLEAR_AND_RETURN = "\033[H"
@@ -35,60 +33,16 @@ class Dums():
         self.standard_game_winner = None 
         self.game.round_win = False  
 
-    def host_game(self):
-        server_host = input("Enter server host (default: localhost): ")
-        server_port = int(input("Enter server port (default: 5000): "))
-        self.start_server(server_host, server_port)
-
-    def start_server(self, host, port):
-        server = ServerConnection(host, port)
-        server_thread = threading.Thread(target=server.start)
-        server_thread.start()
-
-    def join_game(self):
-        server_host = input("Enter server host to join: ")
-        server_port = int(input("Enter server port to join: "))
-        self.start_client(server_host, server_port)
-
-    def start_client(self, host, port):
-        client = ClientConnection(host, port)
-        client.connect()
 
     def rungame(self):
-        while True:
-            print("[1] Host a game")
-            print("[2] Join a game")
-            print("[3] Play against CPU")
-            print("[4] Exit")
-            choice = input("Enter your choice: ")
-
-            if choice == '1':
-                self.host_game()
-            elif choice == '2':
-                self.join_game()
-            elif choice == '3':
-                # ... Existing code ...
-                self.check_game_win()
-                while not self.game.game_win: # Game is not won, play round
-                    self.game.setup_game()
-                    self.play_round()
-                    self.check_game_win()
-            elif choice == '4':
-                print("Exiting the game.")
-                break
-            else:
-                print("Invalid choice. Please select again.")
-
-
-    # def rungame(self):
-    #     """
-    #     Run the dums game.
-    #     """   
-    #     self.check_game_win()
-    #     while not self.game.game_win: # Game is not won, play round
-    #         self.game.setup_game()
-    #         self.play_round()
-    #         self.check_game_win()
+        """
+        Run the dums game.
+        """   
+        self.check_game_win()
+        while not self.game.game_win: # Game is not won, play round
+            self.game.setup_game()
+            self.play_round()
+            self.check_game_win()
 
 
     @staticmethod
