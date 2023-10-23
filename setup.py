@@ -19,7 +19,7 @@ class Game:
         * score_limit: maximum score.
         * round: number of rounds.
         """  
-        self.dums = dums      
+        self.dums = dums  
         self.cards = self.shuffle_cards()
         self.player_decks = []
         self.game_board = []
@@ -161,18 +161,19 @@ class Game:
 
     def setup_game(self):
         """
-        Prompt the host to set up the game.
-        """    
+        Prompt the host to set up the game using the menu interface.
+        """
         if self.round == 1:
-            player_num_opt = ["2","3","4"]
-            score_limit_opt = ["1","2","3","4","5"]
-            num_of_players = questionary.select("How many players (2-4):",choices=player_num_opt).ask()
-            score_limit = questionary.select("Set the score limit (1-5):",choices=score_limit_opt).ask()
+            # Get number of players and score limit from the menu
+            num_of_players = self.dums.menu.num_players_menu()
+            score_limit = self.dums.menu.score_limit_menu()
+            print(num_of_players, score_limit)
             self.choose_mode(int(num_of_players))
             self.set_score_limit(int(score_limit))
             self.set_player_dict()
         else:
             self.setup_new_round()
+
     
 
     def setup_new_round(self):

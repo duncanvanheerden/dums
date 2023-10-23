@@ -38,10 +38,11 @@ class Player:
 
         Returns (str): Player name.
         """  
-        name = str(input("Enter your name: "))
-        while not name.isalnum():
-            name = str(input("Enter your name: "))
-        return name     
+        # name = str(input("Enter your name: "))
+        # while not name.isalnum():
+        #     name = str(input("Enter your name: "))
+        # return name    
+        return self.dums.menu.get_username() 
         
 
     def play_card(self):
@@ -76,10 +77,11 @@ class Player:
         Returns:
             card_to_play (tuple): card chosen from the deck of cards.
         """        
-        choices = [f"{card[0]}-{card[1]}" for card in self.deck]
-        card_to_play = questionary.select("Choose a card:", choices=choices).ask()
-        card_to_play = tuple(map(int, card_to_play.split("-")))
-        return card_to_play  
+        # choices = [f"{card[0]}-{card[1]}" for card in self.deck]
+        # card_to_play = questionary.select("Choose a card:", choices=choices).ask()
+        # card_to_play = tuple(map(int, card_to_play.split("-")))
+        # return card_to_play  
+        return self.dums.menu.display_deck(self)
     
 
     def choose_side_to_play(self, card):

@@ -1,6 +1,8 @@
-import threading
 import shutil
 from setup import Game
+from menu import Menu
+from player import Player
+
 
 # CLEAR = "\033[2J"
 # CLEAR_AND_RETURN = "\033[H"
@@ -15,6 +17,7 @@ class Dums():
         Initialize the Dums class.
         """
         self.game = Game(self)
+        self.menu = Menu()   
         self.left_end = None
         self.right_end = None
         self.nobody_wins_round = False
@@ -34,12 +37,14 @@ class Dums():
         self.game.round_win = False  
 
 
+
     def rungame(self):
         """
         Run the dums game.
         """   
         self.check_game_win()
         while not self.game.game_win: # Game is not won, play round
+            # self.menu.main_menu(self.game)
             self.game.setup_game()
             self.play_round()
             self.check_game_win()
